@@ -1,0 +1,4 @@
+{
+  "/(site)/page": "app/(site)/page.js",
+  "/eti-manage-x9k2m/page": "app/eti-manage-x9k2m/page.js"
+}
