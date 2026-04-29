@@ -16,15 +16,10 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/eti-manage-x9k2m/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/eti-manage-x9k2m/page.js"
-    ],
-    "/eti-manage-x9k2m/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/eti-manage-x9k2m/layout.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
