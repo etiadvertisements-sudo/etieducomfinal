@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['etieducom.com', 'images.unsplash.com', 'images.pexels.com', 'upload.wikimedia.org'],
+    domains: ['etieducom.com', 'images.unsplash.com', 'images.pexels.com', 'upload.wikimedia.org', 'res.cloudinary.com'],
     unoptimized: true,
   },
   async rewrites() {

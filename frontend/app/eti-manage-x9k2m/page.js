@@ -2133,16 +2133,20 @@ function TeamTab() {
 
 
 export default function SecureAdminPage() {
-  const [authState, setAuthState] = useState('loading'); // loading, login, otp, authenticated
+  const [authState, setAuthState] = useState('loading'); // loading, login, setup-2fa, otp, authenticated
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
-  const [generatedOTP, setGeneratedOTP] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [lockoutUntil, setLockoutUntil] = useState(null);
   const [lastActivity, setLastActivity] = useState(Date.now());
   const [loginLogs, setLoginLogs] = useState([]);
   const [deviceId, setDeviceId] = useState('');
+  // 2FA setup state
+  const [setupSecret, setSetupSecret] = useState('');
+  const [setupQrDataUrl, setSetupQrDataUrl] = useState('');
+  const [setupOtpAuthUri, setSetupOtpAuthUri] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // Initialize
   useEffect(() => {
@@ -2216,7 +2220,7 @@ export default function SecureAdminPage() {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check lockout
     if (lockoutUntil && Date.now() < lockoutUntil) {
       const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
@@ -2224,6 +2228,7 @@ export default function SecureAdminPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const res = await fetch(`${API_URL}/api/admin/login`, {
         method: 'POST',
@@ -2231,19 +2236,12 @@ export default function SecureAdminPage() {
         body: JSON.stringify({ password })
       });
       const data = await res.json();
-      
-      if (data.success && data.token) {
-        // Login successful via backend
-        sessionStorage.setItem('admin_token', data.token);
-        completeLogin();
-        localStorage.setItem('admin_attempts', '0');
-        setLoginAttempts(0);
-      } else {
+
+      if (res.status === 401) {
         const newAttempts = loginAttempts + 1;
         setLoginAttempts(newAttempts);
         localStorage.setItem('admin_attempts', newAttempts.toString());
         logLoginAttempt(false);
-        
         if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
           const lockout = Date.now() + LOCKOUT_TIME;
           setLockoutUntil(lockout);
@@ -2252,25 +2250,86 @@ export default function SecureAdminPage() {
         } else {
           toast.error(`Invalid password. ${MAX_LOGIN_ATTEMPTS - newAttempts} attempts remaining.`);
         }
+        return;
       }
+
+      if (data.requires_setup) {
+        setSetupSecret(data.secret);
+        setSetupQrDataUrl(data.qr_data_url);
+        setSetupOtpAuthUri(data.otpauth_uri);
+        setOtp('');
+        setAuthState('setup-2fa');
+        return;
+      }
+
+      if (data.requires_otp) {
+        setOtp('');
+        setAuthState('otp');
+        return;
+      }
+
+      toast.error('Unexpected server response');
     } catch (error) {
       toast.error('Unable to connect to server. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleOTPSubmit = (e) => {
+  const handleSetup2FASubmit = async (e) => {
     e.preventDefault();
-    
-    if (otp === generatedOTP) {
-      // Authorize this device
-      const authorizedDevices = JSON.parse(localStorage.getItem('admin_authorized_devices') || '[]');
-      authorizedDevices.push(deviceId);
-      localStorage.setItem('admin_authorized_devices', JSON.stringify(authorizedDevices));
-      
-      completeLogin();
-      toast.success('Device authorized successfully!');
-    } else {
-      toast.error('Invalid OTP');
+    if (otp.length !== 6) { toast.error('Please enter the 6-digit code'); return; }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, otp, pending_secret: setupSecret })
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.token) {
+        sessionStorage.setItem('admin_token', data.token);
+        completeLogin();
+        localStorage.setItem('admin_attempts', '0');
+        setLoginAttempts(0);
+        toast.success('2FA enabled. Save your authenticator app — required for next login!');
+        setSetupSecret(''); setSetupQrDataUrl(''); setSetupOtpAuthUri(''); setOtp('');
+      } else {
+        toast.error(data.detail || 'Invalid code. Please try again.');
+        setOtp('');
+      }
+    } catch (error) {
+      toast.error('Unable to connect to server.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleOTPSubmit = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) { toast.error('Please enter the 6-digit code'); return; }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, otp })
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.token) {
+        sessionStorage.setItem('admin_token', data.token);
+        completeLogin();
+        localStorage.setItem('admin_attempts', '0');
+        setLoginAttempts(0);
+        setOtp('');
+      } else {
+        toast.error(data.detail || 'Invalid code. Please try again.');
+        setOtp('');
+      }
+    } catch (error) {
+      toast.error('Unable to connect to server.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -2359,13 +2418,18 @@ export default function SecureAdminPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                   <input type="password" placeholder="Enter admin password" value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    data-testid="admin-password-input"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" required />
                 </div>
-                <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2">
-                  <LogIn className="w-5 h-5" /> Continue
+                <button type="submit" disabled={submitting} data-testid="admin-password-submit"
+                  className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-60">
+                  <LogIn className="w-5 h-5" /> {submitting ? 'Verifying...' : 'Continue'}
                 </button>
                 <p className="text-xs text-gray-400 text-center">
                   {MAX_LOGIN_ATTEMPTS - loginAttempts} attempts remaining
+                </p>
+                <p className="text-xs text-center text-gray-500 flex items-center justify-center gap-1 mt-2">
+                  <Shield className="w-3 h-3 text-green-600" /> 2FA required for all logins
                 </p>
               </form>
             )}
@@ -2382,7 +2446,64 @@ export default function SecureAdminPage() {
     );
   }
 
-  // OTP Screen
+  // 2FA Setup Screen (first-time)
+  if (authState === 'setup-2fa') {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg">
+            <div className="text-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Shield className="w-10 h-10 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Set Up 2FA</h1>
+              <p className="text-gray-500 text-sm mt-1">Mandatory for admin access — one-time setup</p>
+            </div>
+
+            <ol className="text-sm text-gray-700 mb-5 space-y-2 list-decimal pl-5">
+              <li>Install <b>Google Authenticator</b>, <b>Microsoft Authenticator</b>, or <b>Authy</b> on your phone.</li>
+              <li>Scan the QR code below or enter the secret key manually.</li>
+              <li>Enter the 6-digit code from your app to confirm.</li>
+            </ol>
+
+            {setupQrDataUrl && (
+              <div className="flex flex-col items-center bg-gray-50 rounded-xl p-4 mb-4">
+                <img src={setupQrDataUrl} alt="Scan with Authenticator app" className="w-48 h-48 rounded-lg" data-testid="admin-2fa-qr" />
+                <div className="mt-3 w-full">
+                  <p className="text-xs text-gray-500 text-center mb-1">Can't scan? Enter this key manually:</p>
+                  <div className="bg-white border border-gray-200 rounded-lg p-2 font-mono text-xs text-center break-all select-all" data-testid="admin-2fa-secret">
+                    {setupSecret}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleSetup2FASubmit} className="space-y-4">
+              <input type="text" placeholder="6-digit code from app" value={otp} maxLength={6}
+                inputMode="numeric" autoComplete="one-time-code"
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                data-testid="admin-2fa-setup-otp-input"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-2xl tracking-[0.5em] font-mono focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none" required />
+              <button type="submit" disabled={submitting || otp.length !== 6} data-testid="admin-2fa-setup-submit"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl font-semibold disabled:opacity-50">
+                {submitting ? 'Verifying...' : 'Confirm & Enable 2FA'}
+              </button>
+              <button type="button" onClick={() => { setAuthState('login'); setOtp(''); setPassword(''); }} className="w-full text-gray-500 py-2 text-sm hover:text-gray-700">
+                ← Cancel
+              </button>
+            </form>
+
+            <div className="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+              <b>⚠ Important:</b> Save this device. You'll need the same authenticator app for all future logins. If you lose it, contact a developer to reset.
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // OTP Screen (subsequent logins after 2FA enabled)
   if (authState === 'otp') {
     return (
       <>
@@ -2390,21 +2511,24 @@ export default function SecureAdminPage() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
           <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
             <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Key className="w-10 h-10 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">New Device</h1>
-              <p className="text-gray-500 text-sm mt-1">Enter OTP to authorize this device</p>
+              <h1 className="text-2xl font-bold text-gray-900">Two-Factor Authentication</h1>
+              <p className="text-gray-500 text-sm mt-1">Enter the 6-digit code from your authenticator app</p>
             </div>
             
             <form onSubmit={handleOTPSubmit} className="space-y-4">
-              <input type="text" placeholder="Enter 6-digit OTP" value={otp} maxLength={6}
+              <input type="text" placeholder="000000" value={otp} maxLength={6}
+                inputMode="numeric" autoComplete="one-time-code" autoFocus
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-2xl tracking-widest focus:ring-2 focus:ring-primary/20" required />
-              <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-semibold">
-                Verify & Continue
+                data-testid="admin-otp-input"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-3xl tracking-[0.5em] font-mono focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 outline-none" required />
+              <button type="submit" disabled={submitting || otp.length !== 6} data-testid="admin-otp-submit"
+                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white py-3 rounded-xl font-semibold disabled:opacity-50">
+                {submitting ? 'Verifying...' : 'Verify & Continue'}
               </button>
-              <button type="button" onClick={() => setAuthState('login')} className="w-full text-gray-500 py-2 text-sm">
+              <button type="button" onClick={() => { setAuthState('login'); setOtp(''); setPassword(''); }} className="w-full text-gray-500 py-2 text-sm hover:text-gray-700">
                 ← Back to Login
               </button>
             </form>

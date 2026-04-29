@@ -16,6 +16,10 @@ from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt as pyjwt
 import bleach
+import pyotp
+import qrcode
+import base64
+import io
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -47,6 +51,9 @@ ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 JWT_SECRET = os.environ.get('JWT_SECRET', 'fallback-secret-change-me')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 24
+
+# TOTP Config
+TOTP_ISSUER = os.environ.get('TOTP_ISSUER', 'ETI Educom Admin')
 
 # Uploads directory (local fallback)
 UPLOADS_DIR = ROOT_DIR / "uploads"
@@ -3165,21 +3172,111 @@ class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str = Field(..., min_length=6)
 
-@api_router.post("/admin/login", response_model=AdminLoginResponse)
+
+class AdminAuthRequest(BaseModel):
+    """Combined login + 2FA endpoint payload"""
+    password: str
+    otp: Optional[str] = None
+    pending_secret: Optional[str] = None  # Returned to client during initial setup, sent back to confirm
+
+
+def _generate_qr_data_url(otpauth_uri: str) -> str:
+    """Generate base64-encoded PNG QR code data URL from otpauth URI"""
+    qr = qrcode.QRCode(version=1, box_size=8, border=2)
+    qr.add_data(otpauth_uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+@api_router.post("/admin/login")
 @limiter.limit("5/minute")
-async def admin_login(request: Request, input: AdminLogin):
-    # Check if admin user exists in DB, if not seed it
+async def admin_login(request: Request, input: AdminAuthRequest):
+    """
+    Mandatory 2FA flow:
+    1. Client posts {password}
+       - If 2FA not yet setup → returns {requires_setup: true, secret, qr_data_url, otpauth_uri}
+       - If 2FA setup        → returns {requires_otp: true}
+    2. Client posts {password, otp, pending_secret?} to verify
+       - Setup mode: pending_secret + otp → save secret, return token
+       - Login mode: otp → verify against saved secret, return token
+    """
+    # Ensure admin exists
     admin = await db.admin_users.find_one({"role": "admin"}, {"_id": 0})
     if not admin:
         admin_id = str(uuid.uuid4())
         hashed = hash_password(ADMIN_PASSWORD)
-        admin = {"id": admin_id, "password_hash": hashed, "role": "admin", "created_at": datetime.now(timezone.utc).isoformat()}
+        admin = {
+            "id": admin_id,
+            "password_hash": hashed,
+            "role": "admin",
+            "totp_secret": None,
+            "totp_enabled": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
         await db.admin_users.insert_one(admin)
-    
-    if verify_password(input.password, admin["password_hash"]):
-        token = create_jwt_token(admin["id"])
-        return AdminLoginResponse(success=True, message="Login successful", token=token)
-    return AdminLoginResponse(success=False, message="Invalid password", token=None)
+
+    # Step 1: Verify password (always required)
+    if not verify_password(input.password, admin["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    totp_enabled = admin.get("totp_enabled") and admin.get("totp_secret")
+
+    # ── First-time setup flow ──
+    if not totp_enabled:
+        # No OTP submitted yet → generate fresh secret + QR
+        if not input.otp or not input.pending_secret:
+            secret = pyotp.random_base32()
+            totp = pyotp.TOTP(secret)
+            otpauth_uri = totp.provisioning_uri(name="admin@etieducom.com", issuer_name=TOTP_ISSUER)
+            qr_data_url = _generate_qr_data_url(otpauth_uri)
+            return {
+                "requires_setup": True,
+                "secret": secret,
+                "otpauth_uri": otpauth_uri,
+                "qr_data_url": qr_data_url,
+            }
+        # OTP submitted with pending_secret → confirm setup
+        try:
+            totp = pyotp.TOTP(input.pending_secret)
+            if not totp.verify(input.otp, valid_window=1):
+                raise HTTPException(status_code=400, detail="Invalid OTP. Please try again.")
+            await db.admin_users.update_one(
+                {"id": admin["id"]},
+                {"$set": {"totp_secret": input.pending_secret, "totp_enabled": True}}
+            )
+            token = create_jwt_token(admin["id"])
+            return {"success": True, "message": "2FA enabled. Login successful.", "token": token}
+        except HTTPException:
+            raise
+        except Exception as e:
+            logging.error(f"2FA setup error: {e}")
+            raise HTTPException(status_code=400, detail="Invalid setup data")
+
+    # ── Existing 2FA login flow ──
+    if not input.otp:
+        return {"requires_otp": True}
+
+    totp = pyotp.TOTP(admin["totp_secret"])
+    if not totp.verify(input.otp, valid_window=1):
+        raise HTTPException(status_code=401, detail="Invalid OTP code")
+
+    token = create_jwt_token(admin["id"])
+    return {"success": True, "message": "Login successful", "token": token}
+
+
+@api_router.post("/admin/2fa/reset")
+async def reset_2fa(admin=Depends(get_current_admin)):
+    """Authenticated admin can reset their own 2FA (e.g. lost phone). 
+    Next login will trigger fresh setup flow."""
+    await db.admin_users.update_one(
+        {"id": admin["id"]},
+        {"$set": {"totp_secret": None, "totp_enabled": False}}
+    )
+    return {"message": "2FA reset. You will be prompted to set it up again on next login."}
 
 
 @api_router.post("/admin/verify")
@@ -4088,10 +4185,25 @@ async def seed_admin_user():
     if not admin:
         admin_id = str(uuid.uuid4())
         hashed = hash_password(ADMIN_PASSWORD)
-        await db.admin_users.insert_one({"id": admin_id, "password_hash": hashed, "role": "admin", "created_at": datetime.now(timezone.utc).isoformat()})
+        await db.admin_users.insert_one({
+            "id": admin_id,
+            "password_hash": hashed,
+            "role": "admin",
+            "totp_secret": None,
+            "totp_enabled": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
         logging.info("Admin user seeded successfully")
     else:
-        logging.info("Admin user already exists")
+        # Backfill 2FA fields for existing admins (migration)
+        if "totp_enabled" not in admin:
+            await db.admin_users.update_one(
+                {"id": admin["id"]},
+                {"$set": {"totp_secret": None, "totp_enabled": False}}
+            )
+            logging.info("Admin 2FA fields backfilled")
+        else:
+            logging.info("Admin user already exists")
 
 
 @app.on_event("shutdown")
