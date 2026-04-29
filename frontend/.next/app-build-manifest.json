@@ -30,6 +30,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(site)/blogs/page.js"
+    ],
+    "/(site)/programs/[programId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(site)/programs/[programId]/page.js"
     ]
   }
 }

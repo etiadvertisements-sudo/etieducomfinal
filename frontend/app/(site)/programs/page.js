@@ -22,17 +22,24 @@ import {
 } from 'lucide-react';
 
 export const metadata = {
-  title: 'Programs & Courses | IT Training Institute',
-  description: 'Explore our comprehensive range of IT programs including career tracks and certifications. Software Development, Cybersecurity, Digital Marketing & more.',
-  keywords: 'IT programs, courses, certifications, career tracks, software development course, cybersecurity training, digital marketing course',
+  title: 'Programs & Courses — Industry-Ready IT Training',
+  description: 'Explore 50+ industry-aligned IT programs at ETI Educom — Software Development, Cybersecurity, Data Analytics, Digital Marketing, AI, UI/UX & more. Get certified, get placed.',
+  keywords: 'IT programs, IT courses Pathankot, certifications, career tracks, software development course, cybersecurity training, digital marketing course, data analytics course, AI course',
   openGraph: {
-    title: 'Programs at ETI Educom®',
-    description: 'Industry-aligned IT training programs for your career.',
-    url: 'https://etieducom.com/programs',
+    title: 'Programs & Courses | ETI Educom®',
+    description: 'Industry-aligned IT training programs for your career. 50+ certifications, 100% placement support.',
+    url: 'https://www.etieducom.com/programs',
+    type: 'website',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Programs & Courses | ETI Educom®',
+    description: '50+ industry-aligned IT training programs with certifications and placement support.',
+    images: ['/images/og-image.jpg'],
+  },
   alternates: {
-    canonical: 'https://etieducom.com/programs',
+    canonical: 'https://www.etieducom.com/programs',
   },
 };
 
@@ -86,7 +93,7 @@ const programCategories = [
     title: 'Office & Accounting',
     description: 'Essential office and financial software training',
     programs: [
-      { id: 'ms-office-ai', title: 'MS-Office with AI', icon: Award, duration: '2 Months', desc: 'Microsoft Office suite with AI tools' },
+      { id: 'ms-office', title: 'MS-Office with AI', icon: Award, duration: '2 Months', desc: 'Microsoft Office suite with AI tools' },
       { id: 'e-accounting', title: 'E-Accounting', icon: Calculator, duration: '3 Months', desc: 'Tally, GST, and financial accounting' }
     ]
   },

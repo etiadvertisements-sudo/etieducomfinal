@@ -12,7 +12,7 @@ const META_PIXEL_ID = '1290011752822133';
 const GOOGLE_ADS_ID = 'AW-XXXXXXXXX';
 
 export const metadata = {
-  metadataBase: new URL('https://etieducom.com'),
+  metadataBase: new URL('https://www.etieducom.com'),
   title: {
     default: 'ETI Educom® | The Computer Career School',
     template: '%s | ETI Educom®',
@@ -36,7 +36,7 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://etieducom.com',
+    url: 'https://www.etieducom.com',
     siteName: 'ETI Educom',
     title: 'ETI Educom® | The Computer Career School',
     description: 'India\'s leading Computer Career School offering certified training in Software Development, Cybersecurity, Digital Marketing & IT Support since 2017.',
@@ -59,7 +59,7 @@ export const metadata = {
     google: 'your-google-verification-code',
   },
   alternates: {
-    canonical: 'https://etieducom.com',
+    canonical: 'https://www.etieducom.com',
   },
   other: {
     'geo.region': 'IN-PB',
@@ -75,8 +75,8 @@ const jsonLd = {
   '@type': 'EducationalOrganization',
   name: 'ETI Educom',
   alternateName: 'ETI Educom®',
-  url: 'https://etieducom.com',
-  logo: 'https://etieducom.com/images/logo-blue.png',
+  url: 'https://www.etieducom.com',
+  logo: 'https://www.etieducom.com/images/logo-blue.png',
   description: 'India\'s premier Computer Career School offering certified training in Software Development, Cybersecurity, Digital Marketing & IT Support since 2017.',
   foundingDate: '2017',
   address: {

@@ -621,22 +621,62 @@ const programsData = {
   }
 };
 
+export async function generateStaticParams() {
+  // Pre-generate all program pages at build time for best SEO
+  return Object.keys(programsData).map((programId) => ({ programId }));
+}
+
 export async function generateMetadata({ params }) {
   const program = programsData[params.programId];
-  
+
   if (!program) {
     return {
-      title: 'Program Not Found | ETI Educom®',
+      title: 'Program Not Found',
+      robots: { index: false, follow: false },
     };
   }
 
+  const url = `https://www.etieducom.com/programs/${params.programId}`;
+  const title = `${program.title} Course | ${program.duration} | ETI Educom®`;
+  const description = `${program.title} — ${program.tagline}. ${program.description.slice(0, 160).trim()}…`;
+  const keywords = [
+    program.title,
+    `${program.title} course`,
+    `${program.title} training`,
+    `${program.title} in Pathankot`,
+    `${program.title} certification`,
+    program.category,
+    ...(program.certifications || []).slice(0, 5),
+    'ETI Educom',
+    'IT training Pathankot',
+  ].join(', ');
+
   return {
-    title: `${program.title} Course | ${program.duration} | ETI Educom®`,
-    description: program.description,
-    keywords: `${program.title}, ${program.category}, IT training, ${program.certifications.join(', ')}, ETI Educom`,
+    title,
+    description,
+    keywords,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: `${program.title} - ETI Educom®`,
-      description: program.description,
+      description,
+      url,
+      type: 'website',
+      siteName: 'ETI Educom',
+      locale: 'en_IN',
+      images: [{ url: '/images/og-image.jpg', width: 1200, height: 630, alt: `${program.title} - ETI Educom` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${program.title} - ETI Educom®`,
+      description,
+      images: ['/images/og-image.jpg'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
     },
   };
 }
@@ -649,9 +689,133 @@ export default function ProgramDetailPage({ params }) {
   }
 
   const IconComponent = program.icon;
+  const programUrl = `https://www.etieducom.com/programs/${params.programId}`;
+
+  // SEO: Parse salary range for structured data (best-effort)
+  const parseSalary = (str) => {
+    if (!str) return null;
+    const m = str.match(/₹\s*(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+    if (!m) return null;
+    return { min: parseFloat(m[1]) * 100000, max: parseFloat(m[2]) * 100000 };
+  };
+  const salaryRange = parseSalary(program.salary);
+
+  // JSON-LD: Course schema (rich-results eligible)
+  const courseSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: program.title,
+    description: program.description,
+    provider: {
+      '@type': 'EducationalOrganization',
+      name: 'ETI Educom',
+      sameAs: 'https://www.etieducom.com',
+      url: 'https://www.etieducom.com',
+      logo: 'https://www.etieducom.com/images/logo-blue.png',
+    },
+    url: programUrl,
+    educationalLevel: program.level,
+    teaches: program.highlights,
+    timeRequired: program.duration,
+    coursePrerequisites: program.prerequisites,
+    inLanguage: 'en-IN',
+    isAccessibleForFree: false,
+    hasCourseInstance: [
+      {
+        '@type': 'CourseInstance',
+        courseMode: ['Onsite', 'Blended'],
+        location: {
+          '@type': 'Place',
+          name: 'ETI Educom',
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'Jodhamal Colony, Dhangu Road',
+            addressLocality: 'Pathankot',
+            addressRegion: 'Punjab',
+            postalCode: '145001',
+            addressCountry: 'IN',
+          },
+        },
+        ...(program.duration ? { courseSchedule: program.duration } : {}),
+      },
+    ],
+    offers: [
+      {
+        '@type': 'Offer',
+        category: 'Paid',
+        availability: 'https://schema.org/InStock',
+        url: programUrl,
+        priceCurrency: 'INR',
+      },
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '5000',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    ...(salaryRange
+      ? {
+          occupationalCredentialAwarded: program.certifications,
+          educationalCredentialAwarded: program.certifications,
+        }
+      : {}),
+  };
+
+  // JSON-LD: BreadcrumbList
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.etieducom.com' },
+      { '@type': 'ListItem', position: 2, name: 'Programs', item: 'https://www.etieducom.com/programs' },
+      { '@type': 'ListItem', position: 3, name: program.title, item: programUrl },
+    ],
+  };
+
+  // JSON-LD: FAQ (using prerequisites + projects + certifications as Q&A)
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is the duration of the ${program.title} course?`,
+        acceptedAnswer: { '@type': 'Answer', text: `The ${program.title} program at ETI Educom runs for ${program.duration}.` },
+      },
+      {
+        '@type': 'Question',
+        name: `What are the prerequisites for ${program.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: program.prerequisites || 'No prior experience required.' },
+      },
+      {
+        '@type': 'Question',
+        name: `What career opportunities are available after the ${program.title} course?`,
+        acceptedAnswer: { '@type': 'Answer', text: `After completing ${program.title}, you can pursue roles such as ${(program.careers || []).slice(0, 5).join(', ')}.` },
+      },
+      {
+        '@type': 'Question',
+        name: `Which certifications can I earn with the ${program.title} program?`,
+        acceptedAnswer: { '@type': 'Answer', text: `Top certifications: ${(program.certifications || []).slice(0, 5).join(', ')}.` },
+      },
+      ...(program.salary
+        ? [{
+            '@type': 'Question',
+            name: `What is the expected salary after ${program.title}?`,
+            acceptedAnswer: { '@type': 'Answer', text: `Graduates of ${program.title} can expect ${program.salary} based on experience and certifications.` },
+          }]
+        : []),
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Structured Data */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary to-blue-700 py-16 lg:py-20">
         <div className="container-main">

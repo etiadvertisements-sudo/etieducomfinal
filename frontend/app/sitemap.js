@@ -1,4 +1,4 @@
-// Dynamic sitemap that auto-includes blogs, programs, and all key pages.
+// Dynamic sitemap that auto-includes blogs, programs (DB + static), and all key pages.
 // Next.js 13+ App Router convention: served at /sitemap.xml
 // Docs: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
 
@@ -7,6 +7,18 @@ const SITE_URL = 'https://www.etieducom.com';
 // Internal API base — calls FastAPI directly (server-side fetch within container)
 // Falls back to public site URL if env var is missing.
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || SITE_URL;
+
+// Static program slugs (defined in /programs/[programId]/page.js programsData)
+// Keep in sync with that file.
+const STATIC_PROGRAM_SLUGS = [
+  'it-foundation', 'digital-design', 'it-networking', 'software-development',
+  'python', 'web-designing', 'web-development', 'data-analytics',
+  'ai-beginners', 'ai-engineering',
+  'digital-marketing', 'graphic-designing', 'ui-ux-designing',
+  'soc-analyst', 'ethical-hacking',
+  'ms-office', 'e-accounting',
+  'spoken-english', 'personality-development', 'interview-preparation',
+];
 
 const STATIC_PAGES = [
   { path: '/',                          changeFrequency: 'daily',   priority: 1.0 },
@@ -56,13 +68,20 @@ export default async function sitemap() {
     priority: p.priority,
   }));
 
-  // Dynamic: programs (by slug)
+  // Static program pages (always included regardless of DB state)
+  const programSlugs = new Set(STATIC_PROGRAM_SLUGS);
+
+  // Dynamic: programs (by slug from DB — adds any extra DB-only programs)
   const programs = await safeFetch(`${API_BASE}/api/programs`);
   for (const prog of programs) {
     if (!prog?.slug) continue;
+    programSlugs.add(prog.slug);
+  }
+
+  for (const slug of programSlugs) {
     entries.push({
-      url: `${SITE_URL}/programs/${prog.slug}`,
-      lastModified: prog.created_at ? new Date(prog.created_at) : now,
+      url: `${SITE_URL}/programs/${slug}`,
+      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.85,
     });
