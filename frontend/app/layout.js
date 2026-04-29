@@ -55,9 +55,8 @@ export const metadata = {
     description: 'India\'s leading Computer Career School offering certified training in Software Development, Cybersecurity, Digital Marketing & IT Support.',
     images: ['/images/og-image.jpg'],
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
+  // Add your real Google Search Console verification code here
+  // verification: { google: 'YOUR_VERIFICATION_CODE' },
   alternates: {
     canonical: 'https://www.etieducom.com',
   },
@@ -159,6 +158,8 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#2563eb" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
