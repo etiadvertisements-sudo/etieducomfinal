@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import CourseViewTracker from '@/components/CourseViewTracker';
 import { 
   Clock, 
   Award, 
@@ -815,6 +816,15 @@ export default function ProgramDetailPage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+
+      {/* GTM: course_view event for dynamic remarketing */}
+      <CourseViewTracker
+        slug={params.programId}
+        name={program.title}
+        category={program.category}
+        duration={program.duration}
+        value={salaryRange?.min || 1500}
+      />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary to-blue-700 py-16 lg:py-20">

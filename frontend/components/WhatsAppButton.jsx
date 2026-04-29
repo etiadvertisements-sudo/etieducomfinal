@@ -2,6 +2,7 @@
 
 import { MessageCircle, X } from 'lucide-react';
 import { useState } from 'react';
+import { trackWhatsAppClick } from '@/lib/analytics';
 
 export default function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(true);
@@ -9,6 +10,10 @@ export default function WhatsAppButton() {
   const message = 'Hi, I want to know more about ETI Educom courses.';
   
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+  const handleClick = () => {
+    trackWhatsAppClick({ location: 'whatsapp_floating_button' });
+  };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
@@ -30,10 +35,12 @@ export default function WhatsAppButton() {
       {/* WhatsApp Button */}
       <a
         href={whatsappUrl}
+        onClick={handleClick}
         target="_blank"
         rel="noopener noreferrer"
         className="group flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#128C7E] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
         aria-label="Chat on WhatsApp"
+        data-testid="whatsapp-button"
       >
         <MessageCircle className="w-7 h-7 text-white" />
         
