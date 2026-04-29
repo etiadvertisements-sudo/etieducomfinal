@@ -46,7 +46,7 @@ export default function BlogDetailPage() {
         setMeta('property', 'og:title', data.meta_title || data.title);
         setMeta('property', 'og:description', data.meta_description || data.excerpt);
         setMeta('property', 'og:type', data.og_type || 'article');
-        setMeta('property', 'og:url', `https://etieducom.com/blogs/${data.slug}`);
+        setMeta('property', 'og:url', `https://www.etieducom.com/blogs/${data.slug}`);
         setMeta('property', 'og:site_name', 'ETI Educom');
         setMeta('property', 'og:locale', 'en_IN');
         if (data.og_image || data.featured_image) {
@@ -71,7 +71,7 @@ export default function BlogDetailPage() {
         // Canonical
         let canonical = document.querySelector('link[rel="canonical"]');
         if (!canonical) { canonical = document.createElement('link'); canonical.setAttribute('rel', 'canonical'); document.head.appendChild(canonical); }
-        canonical.setAttribute('href', data.canonical_url || `https://etieducom.com/blogs/${data.slug}`);
+        canonical.setAttribute('href', data.canonical_url || `https://www.etieducom.com/blogs/${data.slug}`);
 
         // JSON-LD BlogPosting
         const blogJsonLd = {
@@ -82,9 +82,9 @@ export default function BlogDetailPage() {
           image: data.og_image || data.featured_image || '',
           datePublished: data.published_at || data.created_at,
           dateModified: data.updated_at,
-          author: { '@type': 'Organization', name: data.author || 'ETI Educom', url: 'https://etieducom.com' },
-          publisher: { '@type': 'Organization', name: 'ETI Educom', logo: { '@type': 'ImageObject', url: 'https://etieducom.com/images/logo-blue.png' } },
-          mainEntityOfPage: { '@type': 'WebPage', '@id': `https://etieducom.com/blogs/${data.slug}` },
+          author: { '@type': 'Organization', name: data.author || 'ETI Educom', url: 'https://www.etieducom.com' },
+          publisher: { '@type': 'Organization', name: 'ETI Educom', logo: { '@type': 'ImageObject', url: 'https://www.etieducom.com/images/logo-blue.png' } },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `https://www.etieducom.com/blogs/${data.slug}` },
           wordCount: data.word_count || 0,
           articleSection: data.category,
           keywords: (data.tags || []).join(', '),
@@ -97,9 +97,9 @@ export default function BlogDetailPage() {
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://etieducom.com' },
-            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://etieducom.com/blogs' },
-            { '@type': 'ListItem', position: 3, name: data.title, item: `https://etieducom.com/blogs/${data.slug}` },
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.etieducom.com' },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.etieducom.com/blogs' },
+            { '@type': 'ListItem', position: 3, name: data.title, item: `https://www.etieducom.com/blogs/${data.slug}` },
           ]
         };
         addJsonLd('breadcrumb', breadcrumbJsonLd);

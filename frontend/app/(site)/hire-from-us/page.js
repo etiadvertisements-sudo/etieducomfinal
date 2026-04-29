@@ -17,10 +17,10 @@ export const metadata = {
   openGraph: {
     title: 'Hire From ETI Educom®',
     description: 'Recruit skilled, trained IT professionals for your organization.',
-    url: 'https://etieducom.com/hire-from-us',
+    url: 'https://www.etieducom.com/hire-from-us',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/hire-from-us' },
+  alternates: { canonical: 'https://www.etieducom.com/hire-from-us' },
 };
 
 const benefits = [

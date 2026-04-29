@@ -25,12 +25,12 @@ export const metadata = {
   description: 'Boost your career with ETI Educom\'s Summer Training 2025. Choose from Python, Web Development, Digital Marketing, Ethical Hacking & more. Get certified!',
   keywords: 'summer training 2025, summer internship, IT summer course, Python training, web development course, digital marketing course',
   openGraph: {
-    title: 'Summer Training 2025 - ETI Educom®',
+    title: 'Summer Training 2025',
     description: '6 Weeks & 6 Months Summer Training in trending technologies.',
-    url: 'https://etieducom.com/summer-training',
+    url: 'https://www.etieducom.com/summer-training',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/summer-training' },
+  alternates: { canonical: 'https://www.etieducom.com/summer-training' },
 };
 
 const programs = [

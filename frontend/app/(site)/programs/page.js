@@ -26,7 +26,7 @@ export const metadata = {
   description: 'Explore 50+ industry-aligned IT programs at ETI Educom — Software Development, Cybersecurity, Data Analytics, Digital Marketing, AI, UI/UX & more. Get certified, get placed.',
   keywords: 'IT programs, IT courses Pathankot, certifications, career tracks, software development course, cybersecurity training, digital marketing course, data analytics course, AI course',
   openGraph: {
-    title: 'Programs & Courses | ETI Educom®',
+    title: 'Programs & Courses',
     description: 'Industry-aligned IT training programs for your career. 50+ certifications, 100% placement support.',
     url: 'https://www.etieducom.com/programs',
     type: 'website',

@@ -1,6 +1,13 @@
 {
-  "/sitemap.xml/[[...__metadata_id__]]/route": "app/sitemap.xml/[[...__metadata_id__]]/route.js",
-  "/(site)/page": "app/(site)/page.js",
+  "/free-counselling/page": "app/free-counselling/page.js",
+  "/summer-training/page": "app/summer-training/page.js",
+  "/industrial-training/page": "app/industrial-training/page.js",
+  "/(site)/best-institute-in-pathankot/page": "app/(site)/best-institute-in-pathankot/page.js",
+  "/eti-manage-x9k2m/page": "app/eti-manage-x9k2m/page.js",
   "/(site)/programs/[programId]/page": "app/(site)/programs/[programId]/page.js",
-  "/eti-manage-x9k2m/page": "app/eti-manage-x9k2m/page.js"
+  "/(site)/programs/page": "app/(site)/programs/page.js",
+  "/(site)/contact/page": "app/(site)/contact/page.js",
+  "/(site)/about/page": "app/(site)/about/page.js",
+  "/(site)/page": "app/(site)/page.js",
+  "/(site)/blogs/page": "app/(site)/blogs/page.js"
 }

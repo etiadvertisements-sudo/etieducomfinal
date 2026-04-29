@@ -33,12 +33,12 @@ export const metadata = {
   description: 'Join ETI Educom\'s Cyber Warriors - India\'s trusted free cybersecurity awareness initiative. Protecting 8,000+ citizens from online fraud, phishing & cyber threats.',
   keywords: 'cyber awareness india, cybersecurity training free, cyber workshop school college, digital safety program, online fraud protection, phishing awareness',
   openGraph: {
-    title: 'Cyber Warriors - Free Cybersecurity Awareness | ETI Educom®',
+    title: 'Cyber Warriors - Free Cybersecurity Awareness',
     description: 'India\'s trusted free cybersecurity awareness program. Protecting communities from digital threats.',
-    url: 'https://etieducom.com/cyber-warriors',
+    url: 'https://www.etieducom.com/cyber-warriors',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/cyber-warriors' },
+  alternates: { canonical: 'https://www.etieducom.com/cyber-warriors' },
 };
 
 // Impact Statistics - Updated with accurate numbers

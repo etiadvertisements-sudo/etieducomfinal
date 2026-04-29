@@ -9,10 +9,10 @@ export const metadata = {
   openGraph: {
     title: "Founder's Desk - ETI Educom®",
     description: 'The vision behind ETI Educom® - Building Computer Careers.',
-    url: 'https://etieducom.com/founder',
+    url: 'https://www.etieducom.com/founder',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/founder' },
+  alternates: { canonical: 'https://www.etieducom.com/founder' },
 };
 
 const coreBeliefs = [

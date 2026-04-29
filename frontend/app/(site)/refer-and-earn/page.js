@@ -7,12 +7,12 @@ export const metadata = {
   description: 'Refer friends and family to ETI Educom® and earn up to Rs. 2,000 per referral. Help others build careers while you earn rewards.',
   keywords: 'refer and earn, referral program, ETI Educom rewards, cash rewards referral',
   openGraph: {
-    title: 'Refer & Earn - ETI Educom®',
+    title: 'Refer & Earn',
     description: 'Refer friends and earn cash rewards up to Rs. 2,000 per referral.',
-    url: 'https://etieducom.com/refer-and-earn',
+    url: 'https://www.etieducom.com/refer-and-earn',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/refer-and-earn' },
+  alternates: { canonical: 'https://www.etieducom.com/refer-and-earn' },
 };
 
 export default function ReferAndEarnPage() {

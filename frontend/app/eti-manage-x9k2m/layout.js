@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Secure Admin | ETI Educom',
+  title: 'Secure Admin',
   robots: {
     index: false,
     follow: false,

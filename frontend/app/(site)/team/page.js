@@ -6,12 +6,12 @@ export const metadata = {
   description: 'Meet the dedicated professionals who make ETI Educom a leading IT training institute. Expert faculty and staff committed to your success.',
   keywords: 'ETI Educom team, faculty, trainers, IT educators, computer training experts',
   openGraph: {
-    title: 'Our Team - ETI Educom®',
+    title: 'Our Team',
     description: 'Meet our amazing team of educators and industry experts.',
-    url: 'https://etieducom.com/team',
+    url: 'https://www.etieducom.com/team',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/team' },
+  alternates: { canonical: 'https://www.etieducom.com/team' },
 };
 
 export default function TeamPage() {

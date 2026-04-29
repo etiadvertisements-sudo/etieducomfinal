@@ -30,17 +30,17 @@ import AboutPreviewSection from '@/components/AboutPreviewSection';
 import WhatsAppButton from '@/components/WhatsAppButton';
 
 export const metadata = {
-  title: 'ETI Educom® | The Computer Career School - Professional IT Training Institute in India',
+  title: { absolute: 'ETI Educom® | The Computer Career School - Professional IT Training Institute in India' },
   description: 'ETI Educom® is India\'s premier Computer Career School since 2017. We offer industry-certified training programs in Software Development, Cybersecurity, Digital Marketing & IT Support with guaranteed placement assistance.',
   keywords: 'ETI Educom, computer training institute India, IT training, software development course, cybersecurity training, digital marketing course, professional IT training, best computer institute Punjab',
   openGraph: {
     title: 'ETI Educom® | Professional IT Training Institute',
     description: 'India\'s leading Computer Career School offering industry-certified training in Software Development, Cybersecurity, Digital Marketing & IT Support since 2017.',
-    url: 'https://etieducom.com',
+    url: 'https://www.etieducom.com',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
   alternates: {
-    canonical: 'https://etieducom.com',
+    canonical: 'https://www.etieducom.com',
   },
 };
 

@@ -19,10 +19,10 @@ export const metadata = {
   openGraph: {
     title: 'Careers at ETI Educom®',
     description: 'Join our team of passionate educators and industry experts.',
-    url: 'https://etieducom.com/join-team',
+    url: 'https://www.etieducom.com/join-team',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/join-team' },
+  alternates: { canonical: 'https://www.etieducom.com/join-team' },
 };
 
 const whyJoinUs = [

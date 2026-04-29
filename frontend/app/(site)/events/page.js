@@ -8,10 +8,10 @@ export const metadata = {
   openGraph: {
     title: 'Events at ETI Educom®',
     description: 'Join our workshops, seminars, and career guidance sessions.',
-    url: 'https://etieducom.com/events',
+    url: 'https://www.etieducom.com/events',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/events' },
+  alternates: { canonical: 'https://www.etieducom.com/events' },
 };
 
 export default function EventsPage() {

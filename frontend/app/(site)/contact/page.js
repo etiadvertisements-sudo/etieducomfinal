@@ -22,11 +22,11 @@ export const metadata = {
   openGraph: {
     title: 'Contact ETI Educom®',
     description: 'Reach out to ETI Educom® for admissions and enquiries.',
-    url: 'https://etieducom.com/contact',
+    url: 'https://www.etieducom.com/contact',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
   alternates: {
-    canonical: 'https://etieducom.com/contact',
+    canonical: 'https://www.etieducom.com/contact',
   },
 };
 

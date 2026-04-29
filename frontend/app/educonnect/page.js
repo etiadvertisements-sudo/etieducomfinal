@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: 'ETI EduConnect - Distance Learning Programs',
     description: 'Your gateway to distance learning programs from top universities across India.',
-    url: 'https://etieducom.com/educonnect',
+    url: 'https://www.etieducom.com/educonnect',
   },
 };
 

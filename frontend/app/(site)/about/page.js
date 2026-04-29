@@ -20,11 +20,11 @@ export const metadata = {
   openGraph: {
     title: 'About ETI Educom®',
     description: 'Discover the vision, mission and philosophy behind ETI Educom®.',
-    url: 'https://etieducom.com/about',
+    url: 'https://www.etieducom.com/about',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
   alternates: {
-    canonical: 'https://etieducom.com/about',
+    canonical: 'https://www.etieducom.com/about',
   },
 };
 

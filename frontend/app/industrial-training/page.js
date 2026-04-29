@@ -21,16 +21,16 @@ import {
 import IndustrialTrainingForm from '@/components/IndustrialTrainingForm';
 
 export const metadata = {
-  title: 'Industrial Training | 6 Weeks & 6 Months Programs | ETI Educom®',
+  title: 'Industrial Training | 6 Weeks & 6 Months Programs',
   description: 'Get industry-recognized industrial training in Python, Web Development, Cybersecurity & more. Perfect for college students & graduates. Get certified from ETI Educom®!',
   keywords: 'industrial training, IT training, Python course, web development training, cybersecurity course, 6 months industrial training',
   openGraph: {
-    title: 'Industrial Training Programs - ETI Educom®',
+    title: 'Industrial Training Programs',
     description: 'Industry-aligned IT training for students and freshers. Get certified and job-ready.',
-    url: 'https://etieducom.com/industrial-training',
+    url: 'https://www.etieducom.com/industrial-training',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/industrial-training' },
+  alternates: { canonical: 'https://www.etieducom.com/industrial-training' },
 };
 
 const programs = [

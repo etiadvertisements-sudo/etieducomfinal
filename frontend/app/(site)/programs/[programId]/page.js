@@ -637,7 +637,7 @@ export async function generateMetadata({ params }) {
   }
 
   const url = `https://www.etieducom.com/programs/${params.programId}`;
-  const title = `${program.title} Course | ${program.duration} | ETI Educom®`;
+  const title = `${program.title} Course | ${program.duration}`;
   const description = `${program.title} — ${program.tagline}. ${program.description.slice(0, 160).trim()}…`;
   const keywords = [
     program.title,

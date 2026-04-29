@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { Shield, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Privacy Policy | ETI Educom®',
+  title: 'Privacy Policy',
   description: 'Privacy Policy for ETI Educom®. Learn how we collect, use, and protect your personal information.',
-  alternates: { canonical: 'https://etieducom.com/privacy-policy' },
+  alternates: { canonical: 'https://www.etieducom.com/privacy-policy' },
 };
 
 export default function PrivacyPolicyPage() {

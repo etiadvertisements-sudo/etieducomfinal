@@ -7,12 +7,12 @@ export const metadata = {
   description: 'Find answers to frequently asked questions about ETI Educom® programs, admissions, certifications, fees, and placement assistance.',
   keywords: 'ETI Educom FAQ, computer institute questions, IT training FAQ, admission questions, placement FAQ',
   openGraph: {
-    title: 'FAQ - ETI Educom®',
+    title: 'FAQ',
     description: 'Find answers to common questions about our programs and admissions.',
-    url: 'https://etieducom.com/faq',
+    url: 'https://www.etieducom.com/faq',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: 'https://etieducom.com/faq' },
+  alternates: { canonical: 'https://www.etieducom.com/faq' },
 };
 
 export default function FAQPage() {

@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { FileText, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Terms & Conditions | ETI Educom®',
+  title: 'Terms & Conditions',
   description: 'Terms and Conditions for ETI Educom®. Read our terms of service for using our website and educational services.',
-  alternates: { canonical: 'https://etieducom.com/terms-and-conditions' },
+  alternates: { canonical: 'https://www.etieducom.com/terms-and-conditions' },
 };
 
 export default function TermsAndConditionsPage() {

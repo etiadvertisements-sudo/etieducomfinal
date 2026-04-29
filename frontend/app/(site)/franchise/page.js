@@ -19,11 +19,11 @@ export const metadata = {
   openGraph: {
     title: 'ETI Educom® Franchise Opportunity',
     description: 'Build a structured computer education center with ETI Educom®.',
-    url: 'https://etieducom.com/franchise',
+    url: 'https://www.etieducom.com/franchise',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
   alternates: {
-    canonical: 'https://etieducom.com/franchise',
+    canonical: 'https://www.etieducom.com/franchise',
   },
 };
 

@@ -19,17 +19,17 @@ import FreeCounsellingForm from '@/components/FreeCounsellingForm';
 import { Toaster } from 'sonner';
 
 export const metadata = {
-  title: 'Free Career Counselling | Get Expert IT Career Guidance | ETI Educom®',
+  title: 'Free Career Counselling | Get Expert IT Career Guidance',
   description: 'Book your FREE career counselling session with ETI Educom® experts. Get personalized IT career guidance, program recommendations, and placement support. Limited slots!',
   keywords: 'free counselling, career guidance, IT career, consultation, career counselling Pathankot',
   openGraph: {
-    title: 'Free Career Counselling - ETI Educom®',
+    title: 'Free Career Counselling',
     description: 'Get expert guidance for your IT career journey. Book your FREE session now!',
-    url: 'https://etieducom.com/free-counselling',
+    url: 'https://www.etieducom.com/free-counselling',
     images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
   },
   alternates: {
-    canonical: 'https://etieducom.com/free-counselling',
+    canonical: 'https://www.etieducom.com/free-counselling',
   },
   robots: {
     index: true,

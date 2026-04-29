@@ -69,16 +69,23 @@ export const metadata = {
   },
 };
 
-// JSON-LD Structured Data
+// JSON-LD Structured Data — EducationalOrganization + LocalBusiness combined
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'EducationalOrganization',
+  '@type': ['EducationalOrganization', 'LocalBusiness'],
+  '@id': 'https://www.etieducom.com/#organization',
   name: 'ETI Educom',
-  alternateName: 'ETI Educom®',
+  alternateName: ['ETI Educom®', 'ETI Educom Pathankot', 'Educational Training Institute'],
   url: 'https://www.etieducom.com',
   logo: 'https://www.etieducom.com/images/logo-blue.png',
-  description: 'India\'s premier Computer Career School offering certified training in Software Development, Cybersecurity, Digital Marketing & IT Support since 2017.',
+  image: 'https://www.etieducom.com/images/og-image.jpg',
+  description:
+    'India\'s premier Computer Career School offering certified training in Software Development, Cybersecurity, Digital Marketing, Python, Tally, Web Development, Data Analytics, AI, Graphic Design & IT Support since 2017. Best computer institute in Pathankot.',
   foundingDate: '2017',
+  slogan: 'The Computer Career School — Training | Certification | Placement',
+  telephone: '+91-9646727676',
+  email: 'helpdesk@etieducom.com',
+  priceRange: '₹₹',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Jodhamal Colony, Dhangu Road',
@@ -87,12 +94,37 @@ const jsonLd = {
     postalCode: '145001',
     addressCountry: 'IN',
   },
+  geo: { '@type': 'GeoCoordinates', latitude: 32.2643, longitude: 75.6421 },
+  areaServed: [
+    { '@type': 'City', name: 'Pathankot' },
+    { '@type': 'City', name: 'Gurdaspur' },
+    { '@type': 'City', name: 'Dalhousie' },
+    { '@type': 'City', name: 'Kathua' },
+    { '@type': 'City', name: 'Jammu' },
+    { '@type': 'AdministrativeArea', name: 'Punjab' },
+  ],
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '09:00',
+      closes: '19:00',
+    },
+  ],
   contactPoint: {
     '@type': 'ContactPoint',
     telephone: '+91-9646727676',
     contactType: 'customer service',
     email: 'helpdesk@etieducom.com',
     availableLanguage: ['English', 'Hindi', 'Punjabi'],
+    areaServed: 'IN',
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.8',
+    reviewCount: '5000',
+    bestRating: '5',
+    worstRating: '1',
   },
   sameAs: [
     'https://www.facebook.com/etieducom',
@@ -100,6 +132,25 @@ const jsonLd = {
     'https://www.linkedin.com/company/etieducom',
     'https://www.youtube.com/@ETIEducomofficial',
   ],
+};
+
+// JSON-LD: WebSite with SearchAction (sitelinks search box)
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://www.etieducom.com/#website',
+  name: 'ETI Educom',
+  url: 'https://www.etieducom.com',
+  publisher: { '@id': 'https://www.etieducom.com/#organization' },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://www.etieducom.com/blogs?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+  inLanguage: 'en-IN',
 };
 
 export default function RootLayout({ children }) {

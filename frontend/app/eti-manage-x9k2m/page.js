@@ -835,7 +835,7 @@ function BlogsTab() {
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-600 mb-1 block">Canonical URL</label>
-                  <input type="url" placeholder="https://etieducom.com/blogs/..." value={formData.canonical_url} onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })} className="form-input text-sm" />
+                  <input type="url" placeholder="https://www.etieducom.com/blogs/..." value={formData.canonical_url} onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })} className="form-input text-sm" />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-600 mb-1 block">Robots Directive</label>
