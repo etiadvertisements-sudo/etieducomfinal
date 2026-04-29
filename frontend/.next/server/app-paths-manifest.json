@@ -1,6 +1,3 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(site)/page": "app/(site)/page.js",
-  "/eti-manage-x9k2m/page": "app/eti-manage-x9k2m/page.js",
-  "/(site)/best-institute-in-pathankot/page": "app/(site)/best-institute-in-pathankot/page.js"
+  "/(site)/page": "app/(site)/page.js"
 }
