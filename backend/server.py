@@ -402,6 +402,15 @@ async def send_lead_to_crm(name: str, phone: str, email: str = "", source: str =
     logging.error(f"CRM webhook failed after retries: {last_error}")
     return False
 
+def queue_crm_lead(**kwargs):
+    """Fire-and-forget CRM forwarding so form responses stay fast even if the CRM is slow or down."""
+    try:
+        asyncio.create_task(send_lead_to_crm(**kwargs))
+    except RuntimeError:
+        # No running event loop (e.g. called outside async context) — run synchronously as fallback.
+        asyncio.get_event_loop().run_until_complete(send_lead_to_crm(**kwargs))
+
+
 async def send_whatsapp_thank_you(phone: str, name: str, form_type: str = "enquiry"):
     """Send WhatsApp thank you message via MSG91 using 'webenq' template"""
     try:
@@ -1218,7 +1227,7 @@ async def create_contact_enquiry(request: Request, input: ContactEnquiryCreate):
             await send_whatsapp_thank_you(input.phone, input.name, "Contact Enquiry")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone or "", email=input.email, source="Contact Form", program_name=input.enquiry_type)
+        queue_crm_lead(name=input.name, phone=input.phone or "", email=input.email, source="Contact Form", program_name=input.enquiry_type)
 
         # Server-side Meta Conversions API Lead event (fire-and-forget, deduped with browser pixel via event_id)
         await meta_send_lead_event(
@@ -1835,7 +1844,7 @@ async def create_hire_request(input: HireRequestCreate):
         await send_whatsapp_thank_you(input.phone, input.contact_person, "Hire Request")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.contact_person, phone=input.phone, email=input.email, source="Hire From Us", program_name=input.company_name)
+        queue_crm_lead(name=input.contact_person, phone=input.phone, email=input.email, source="Hire From Us", program_name=input.company_name)
         
         return HireRequestResponse(
             id=doc['id'], company_name=doc['company_name'],
@@ -2574,7 +2583,7 @@ async def create_franchise_enquiry(input: FranchiseEnquiryCreate, request: Reque
         await send_whatsapp_thank_you(input.phone, input.name, "Franchise Enquiry")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone, email=input.email, source="Franchise Enquiry", program_name=f"Franchise - {input.city}")
+        queue_crm_lead(name=input.name, phone=input.phone, email=input.email, source="Franchise Enquiry", program_name=f"Franchise - {input.city}")
 
         # Server-side Meta CAPI Lead event
         await meta_send_lead_event(
@@ -2626,7 +2635,7 @@ async def create_counselling_lead(input: CounsellingLeadCreate, request: Request
         await send_whatsapp_thank_you(input.phone, input.name, "Counselling Request")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone, source="Free Counselling", program_name=input.preferred_track)
+        queue_crm_lead(name=input.name, phone=input.phone, source="Free Counselling", program_name=input.preferred_track)
 
         # Server-side Meta Conversions API Lead event
         await meta_send_lead_event(
@@ -3146,7 +3155,7 @@ async def create_cyber_warriors_registration(input: CyberWarriorsRegistrationCre
         await db.cyber_warriors_registrations.insert_one(doc)
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.contact_number, email=input.email, source="Cyber Warriors", program_name="Cybersecurity Awareness")
+        queue_crm_lead(name=input.name, phone=input.contact_number, email=input.email, source="Cyber Warriors", program_name="Cybersecurity Awareness")
 
         # Server-side Meta CAPI Lead event
         await meta_send_lead_event(
@@ -3589,7 +3598,7 @@ async def create_summer_training_lead(input: SummerTrainingLeadCreate, request: 
         await send_whatsapp_thank_you(input.phone, input.name, "Summer Training")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone, email=input.email or "", source="Summer Training", program_name=input.program_interest)
+        queue_crm_lead(name=input.name, phone=input.phone, email=input.email or "", source="Summer Training", program_name=input.program_interest)
 
         # Server-side Meta CAPI Lead event
         await meta_send_lead_event(
@@ -3640,7 +3649,7 @@ async def create_industrial_training_lead(input: IndustrialTrainingLeadCreate, r
         await send_whatsapp_thank_you(input.phone, input.name, "Industrial Training")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone, email=input.email, source="Industrial Training", program_name=input.program_interest)
+        queue_crm_lead(name=input.name, phone=input.phone, email=input.email, source="Industrial Training", program_name=input.program_interest)
 
         # Server-side Meta CAPI Lead event
         await meta_send_lead_event(
@@ -3693,7 +3702,7 @@ async def create_quick_enquiry(request: Request, input: QuickEnquiryCreate):
         await send_whatsapp_thank_you(input.phone, input.name, "Quick Enquiry")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone, email=input.email or "", source="Quick Enquiry", program_name=input.interest)
+        queue_crm_lead(name=input.name, phone=input.phone, email=input.email or "", source="Quick Enquiry", program_name=input.interest)
 
         # Server-side Meta CAPI Lead event
         await meta_send_lead_event(
@@ -3744,7 +3753,7 @@ async def create_referral(input: ReferralCreate):
         await send_whatsapp_thank_you(input.referrer_phone, input.referrer_name, "Referral Submission")
         
         # Send referred friend to CRM
-        await send_lead_to_crm(name=input.friend_name, phone=input.friend_phone, email=input.referrer_email or "", source="Referral", program_name=input.program_interest or "Referred by " + input.referrer_name)
+        queue_crm_lead(name=input.friend_name, phone=input.friend_phone, email=input.referrer_email or "", source="Referral", program_name=input.program_interest or "Referred by " + input.referrer_name)
         
         return ReferralResponse(**{**doc, 'created_at': doc['created_at']})
     except Exception as e:
@@ -3801,7 +3810,7 @@ async def create_service_enquiry(input: ServiceEnquiryCreate):
         await send_whatsapp_thank_you(input.phone, input.contact_person, f"{service_name} Enquiry")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.contact_person, phone=input.phone, email=input.email, source=f"Service - {service_name}", program_name=input.training_topic or service_name)
+        queue_crm_lead(name=input.contact_person, phone=input.phone, email=input.email, source=f"Service - {service_name}", program_name=input.training_topic or service_name)
         
         return ServiceEnquiryResponse(**{**doc, 'created_at': doc['created_at']})
     except Exception as e:
@@ -3907,7 +3916,7 @@ async def create_educonnect_enquiry(input: EduConnectEnquiryCreate, request: Req
         await send_whatsapp_thank_you(input.phone, input.name, "EduConnect Enquiry")
         
         # Send to CRM
-        await send_lead_to_crm(name=input.name, phone=input.phone, source="ETI EduConnect", program_name=input.program_interest or "Distance Learning")
+        queue_crm_lead(name=input.name, phone=input.phone, source="ETI EduConnect", program_name=input.program_interest or "Distance Learning")
 
         # Server-side Meta CAPI Lead event
         await meta_send_lead_event(
