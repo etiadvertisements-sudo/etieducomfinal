@@ -1,0 +1,59 @@
+{
+  "summary": "Re-verification of the 5 fix areas from iteration_1. Backend: extended /app/backend/tests/backend_test.py from 103 to 178 pytest cases (new Iter2 classes: full unauth-401 matrix, public-surface regression, franchise/CW/quick-enquiry contract tests, new-admin-screen CRUD). RESULT 178/178 PASS. All 24 previously-failing TestAuthorizationHardening assertions now pass, plus 33 additional 401 checks (14 PII GETs, 3 DELETEs, 17 mutating POST/PUTs incl. /programs/seed-all, /seo/seed-all, /faqs, /jobs, /authors, /founder-settings, /msg91-settings, /technical-seo, /cyber-warriors/events|video-reviews, and both query-param educonnect creates). No public regression: 17 public GETs still 200 unauth and all 15 public form POSTs return 200/422 (never 401). Frontend: all 3 broken forms are fixed end-to-end (franchise with EMPTY and with <50-char message -> 200 + /thank-you; CW individual + organization -> POST /api/cyber-warriors/register -> visible in admin list; homepage HeroForm -> POST /api/quick-enquiry -> /thank-you). AI chat widget works: bottom-left toggle (x=24) vs WhatsApp bottom-right (x=1840, no conflict), panel opens, real Emergent-LLM course-recommendation reply rendered. Admin 2FA login OK; all 25 tabs (12 new + 13 existing) load with ZERO 401/4xx API responses; Programs seed -> 20 programs, SEO seed -> 17 pages, FAQ add via UI persists, Team create+delete via adminFetch works. Dashboard 'Total Leads' now includes Franchise (5) and Cyber Warriors (5) rows. Remaining real defects are only the two 'polish' items: the CSP still blocks GA4 (bad wildcard) and the wikimedia logos still 400/429 (12 broken images on /educonnect).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/cyber-warriors/register", "issue": "CyberWarriorsRegistrationCreate.email is a REQUIRED str. CyberWarriorsForm.jsx therefore sends the literal placeholder 'not-provided@example.com' for individuals who don't type an email (FranchiseForm does the same). Works, but pollutes the CRM with fake emails and will break any email automation. Make email Optional[EmailStr] = None."},
+      {"endpoint": "POST /api/popup-modal", "issue": "Handler hard-codes modal_dict['is_active'] = True and PopupModalCreate has no is_active field, so the admin 'Save Popup' button always publishes the popup site-wide immediately; there is no way to save a draft. (Reproduced: an API-created popup instantly appeared on the public site.)"},
+      {"endpoint": "GET /api/msg91-settings, /api/admin/seo/ping, POST /api/msg91-settings/test", "issue": "NOT CONFIGURED (not broken): MSG91/Cloudinary/Meta CAPI blank, Google Indexing returns skipped:true, IndexNow 202. Uploads still fall back to ephemeral local disk (files lost on pod restart)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "next.config.js CSP / AnalyticsBootstrap", "issue": "GA4 IS STILL BLOCKED. connect-src lists 'https://*.analytics.google.com' but the beacon host is the bare 'analytics.google.com' — a CSP wildcard does not match the apex label. Every page load logs 'Fetch API cannot load https://analytics.google.com/g/collect ... Refused to connect'. Add https://analytics.google.com (and keep the wildcard).", "selector": "console", "priority": "MEDIUM"},
+      {"component": "EduConnectLanding.jsx / EduConnectClient.jsx / PartnersSection.jsx", "issue": "Wikimedia logos NOT fixed — still hardcoded upload.wikimedia.org URLs; 12 of 16 <img> on /educonnect have naturalWidth 0 and frontend log floods with 'upstream image response failed ... 429/400'. A text fallback now shows the university name (better than the old blank boxes) but no logo ever renders. Self-host the logos in /public.", "selector": "section:has-text('PARTNERED WITH')", "priority": "MEDIUM"},
+      {"component": "AIChatWidget.jsx", "issue": "Assistant replies are rendered as raw text, so markdown from the LLM shows literally: '**Computer Career Foundation (3-6 months)**', '1)' lists unstyled. Render markdown (or ask the model for plain text).", "selector": "[data-testid=\"ai-chat-messages\"]", "priority": "LOW"},
+      {"component": "AIChatWidget.jsx", "issue": "Open panel is anchored bottom-left and overlaps the hero CTA 'Request Free Consultation' on desktop 1920x1080. Not blocking (user-initiated) but the primary CTA is covered while chatting.", "selector": "[data-testid=\"ai-chat-panel\"]", "priority": "LOW"},
+      {"component": "FranchiseForm / CyberWarriorsForm / HeroForm", "issue": "Still ZERO data-testid on any of the three fixed lead forms; tests must select by placeholder text. Admin nav tabs also had no testid (I added data-testid=\"nav-tab-{id}\").", "selector": "form input[placeholder]", "priority": "LOW"},
+      {"component": "Admin DashboardTab - Recent Leads", "issue": "Cyber Warriors rows render no phone number (the record stores contact_number, the row reads phone), so CW recent leads show a name with no contact.", "selector": "main:has-text('Recent Leads')", "priority": "LOW"},
+      {"component": "Admin DashboardTab - Total Leads", "issue": "'Total Leads' = 29 is exactly the sum of the 8 Lead Sources rows; Referrals (3), Hire Requests, Job Applications, brochure and career-quiz leads are still excluded, and 'Referrals' has no Lead Sources row even though a Referrals KPI card exists. Decide one definition of a lead.", "selector": "main", "priority": "LOW"},
+      {"component": "/thank-you page", "issue": "At 1920px the heading/content column is constrained very narrow and centred with a large empty band; looks unstyled for desktop.", "selector": "main", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/educonnect", "issues": ["University logo strip shows 8 name-only cards, no logos (upstream 429/400)", "Hero still claims '15+ Partner Universities' / '40+ Programs' while /api/educonnect/universities returns 0"]},
+      {"screen": "Global", "issues": ["Header logo still renders as a small thumbnail with a next/image width-or-height warning on every page"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/iteration2_backend.xml"
+  ],
+  "action_items": [
+    "CSP: add https://analytics.google.com to connect-src in next.config.js (the *.analytics.google.com wildcard does not match the apex host) — GA4 is still 100% blocked.",
+    "Replace the hardcoded upload.wikimedia.org logo URLs in EduConnectLanding.jsx, EduConnectClient.jsx and PartnersSection.jsx with self-hosted /public assets (12 broken images on /educonnect).",
+    "Render markdown in AIChatWidget replies (raw ** and numbered lists are visible to users).",
+    "Make email Optional on CyberWarriorsRegistrationCreate (and stop sending the 'not-provided@example.com' placeholder from CyberWarriorsForm/FranchiseForm).",
+    "Add an is_active flag to PopupModalCreate so the admin can save a popup without instantly publishing it.",
+    "Map contact_number in the Dashboard 'Recent Leads' rows for Cyber Warriors; decide whether Referrals/Hire/Applications belong in 'Total Leads'.",
+    "Add data-testid to the three lead forms (franchise/CW/hero) for stable regression tests.",
+    "Still open from iteration_1: split server.py (4781 lines) and app/eti-manage-x9k2m/page.js (~3090 lines); /api/upload local-disk fallback is non-durable."
+  ],
+  "critical_code_review_comments": [
+    "Auth hardening is correctly and consistently applied — verified 33 endpoints return 401 with no header and 2xx with a bearer token, and no public endpoint or public form POST regressed. Consider still moving to an APIRouter(dependencies=[Depends(get_current_admin)]) admin router so future endpoints can't be forgotten.",
+    "next.config.js CSP: 'https://*.analytics.google.com' is a no-op for the actual GA4 beacon host analytics.google.com; the iteration_1 CSP action item is therefore only half-fixed.",
+    "FranchiseForm.jsx now synthesises a >=50-char why_franchise from city+investment — works, but the real fix is to relax FranchiseEnquiryCreate.why_franchise min_length=50 so the stored 'reason' isn't machine-generated boilerplate for every lead.",
+    "server.py hard-codes is_active=True in create_or_update_popup_modal, contradicting the admin UI's implied draft/save semantics."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/frontend/app/eti-manage-x9k2m/page.js"
+  ],
+  "success_rate": {"backend": "100% (178/178 pytest cases)", "frontend": "100% of tested flows: 3/3 fixed forms, AI chat widget, 25/25 admin tabs, programs+SEO seed, FAQ add, team create/delete; 2 unfixed polish items (CSP/GA4, wikimedia logos)"},
+  "seed_data_creation": "Left in place (real site content): 20 programs via POST /api/programs/seed-all, 17 SEO records via POST /api/seo/seed-all. Everything else created during testing was removed — all TEST_ documents deleted from contact_enquiries, counselling/summer/industrial/quick/franchise/referrals/service/educonnect/CW/applications/brochure/career-quiz, faqs, team_members; the TEST_ popup_modal doc was deleted (it had auto-published to the live site) and founder_settings.title was restored to 'Founder & CEO'. Every lead collection is back to 0.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "Admin /eti-manage-x9k2m, password ETIadmin@2026, TOTP secret R5YPU4GOOOHBRZPEY7WK4IDRRCC4ZIEK (unchanged, still enabled; backend_test.py reads it from Mongo admin_users.totp_secret).",
+  "context_for_next_testing_agent": "Run `cd /app/backend && python -m pytest tests/backend_test.py -q` — expect 178/178 PASS (pytest.ini forces -n 2 --dist loadscope). /api/admin/login is still 5/min per IP: each pytest run costs 2 logins (4 requests) and each Playwright admin login costs 2, so sleep ~65s between an admin UI run and a pytest run or you will see 429 fixture errors. Admin nav tabs now expose data-testid=\"nav-tab-{id}\" (dashboard, all-leads, franchise-leads, educonnect-leads, cyber-warriors, referrals, hire-requests, applications, team, blogs, authors, reviews, events, partners, universities, programs, branches, jobs, faqs, announcements, popup, founder, seo, msg91, security) — use those instead of text selectors. Categorised outcome: WORKING = auth hardening (all 33 checks), public surface, 3 fixed forms, AI chat widget, all 25 admin tabs, programs/SEO seeding, FAQ/team/job/author/branch/announcement/founder CRUD. EMPTY (fresh DB) = blogs, events, team, partners, reviews, branches, announcements, universities, authors, jobs, all lead lists (I cleaned my TEST_ data). NOT CONFIGURED = Cloudinary (local ephemeral fallback), MSG91, Meta CAPI, Google Indexing. BROKEN = CSP/GA4 apex-host wildcard, wikimedia logos (12 broken images on /educonnect), AI chat raw markdown.",
+  "rca_of_the_issue": "GA4 regression RCA: CSP wildcards match only subdomains, so connect-src 'https://*.analytics.google.com' never authorises the apex host analytics.google.com that gtag posts /g/collect to; reproduce by loading '/' and reading the console ('Fetch API cannot load https://analytics.google.com/g/collect'). Fix = add the apex host explicitly. Wikimedia RCA: the logo URLs were never replaced, and next/image proxies them server-side from the pod IP, which Wikimedia rate-limits (429) / rejects (400); reproduce with `tail /var/log/supervisor/frontend.*.log | grep 'upstream image'` after loading /educonnect. Everything else in the review request was verified fixed."
+}
