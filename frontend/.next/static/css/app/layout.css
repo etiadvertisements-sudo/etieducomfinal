@@ -541,6 +541,9 @@ video {
 .pointer-events-none {
   pointer-events: none;
 }
+.\!visible {
+  visibility: visible !important;
+}
 .visible {
   visibility: visible;
 }
@@ -2645,6 +2648,9 @@ video {
 .underline {
   text-decoration-line: underline;
 }
+.underline-offset-2 {
+  text-underline-offset: 2px;
+}
 .underline-offset-4 {
   text-underline-offset: 4px;
 }
@@ -2905,6 +2911,14 @@ body {
 
 .header-main.with-announcement {
   top: 2.5rem;
+}
+
+/* Body-scoped announcement offsets (robust against React className updates) */
+body.has-announcement .header-main {
+  top: 2.5rem;
+}
+body.has-announcement .main-content {
+  padding-top: 112px;
 }
 
 /* Navigation */
@@ -3622,6 +3636,10 @@ body {
   opacity: 1;
 }
 
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+}
+
 .hover\:shadow-2xl:hover {
   --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
   --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
@@ -3850,6 +3868,10 @@ body {
 
   .sm\:left-6 {
     left: 1.5rem;
+  }
+
+  .sm\:block {
+    display: block;
   }
 
   .sm\:inline {

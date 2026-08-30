@@ -1,7 +1,8 @@
 {
-  "/free-counselling/page": "app/free-counselling/page.js",
   "/summer-training/page": "app/summer-training/page.js",
   "/(site)/page": "app/(site)/page.js",
-  "/(site)/contact/page": "app/(site)/contact/page.js",
-  "/(site)/thank-you/page": "app/(site)/thank-you/page.js"
+  "/(site)/about/page": "app/(site)/about/page.js",
+  "/(site)/team/page": "app/(site)/team/page.js",
+  "/(site)/events/page": "app/(site)/events/page.js",
+  "/(site)/blogs/page": "app/(site)/blogs/page.js"
 }

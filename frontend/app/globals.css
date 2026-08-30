@@ -48,6 +48,14 @@ body {
   @apply top-10;
 }
 
+/* Body-scoped announcement offsets (robust against React className updates) */
+body.has-announcement .header-main {
+  top: 2.5rem;
+}
+body.has-announcement .main-content {
+  padding-top: 112px;
+}
+
 /* Navigation */
 .nav-link {
   @apply px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors rounded-lg;

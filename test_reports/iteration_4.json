@@ -1,0 +1,32 @@
+{
+  "summary": "Verified NotificationBar on public site and full admin CRUD for Announcements, Events, Team, Reviews, and Blogs. Backend: created pytest suite /app/backend/tests/test_admin_crud.py (7 tests, 100% pass) that performs mandatory-TOTP admin login (setup flow with pyotp), then POST → public GET verification → PUT → DELETE for each resource + a 401 negative test. Frontend: Playwright verified that on the homepage the notification bar renders with data-testid='notification-bar', text '🎓 Admissions open for 2026 batch — limited seats!', link data-testid='notification-bar-link' href='/free-counselling', and the close button data-testid='notification-bar-close' dismisses the bar. Public /events, /team, /blogs pages return 200.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Global", "issues": ["Next/Image warnings for /images/logo-blue.png and preloaded font woff2 (cosmetic, unchanged from prior iteration)"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_crud.py",
+    "/app/test_reports/pytest/admin_crud.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py is now 4885 lines — long-standing recommendation to split into modules (admin auth, leads, content CRUD, seed data) still stands.",
+    "Admin login flow with xdist parallel workers causes a race: both workers hit requires_setup, each generates a different fresh secret, whichever confirms last wins and the other becomes invalid. Fixed in tests by running with -n0. Not a production bug, but worth noting: if two admins hit /admin/login simultaneously on first-ever setup they can race. Consider adding a serialising lock or checking totp_enabled again inside the confirm branch.",
+    "NotificationBar: dismiss state is component-local (useState), so it does NOT persist across reloads — bar reappears on refresh. If persistence per-visitor is desired, use localStorage keyed by announcement id.",
+    "NotificationBar API URL: uses process.env.NEXT_PUBLIC_API_URL || '' — relies on relative /api proxy. Consistent with rest of app, OK."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_crud.py (new)"
+  ],
+  "success_rate": {"backend": "100% (7/7)", "frontend": "100% (notification bar render/link/close + /events /team /blogs load)"},
+  "test_credentials": "Admin password from /app/memory/test_credentials.md (ETIadmin@2026). TOTP secret is generated fresh on first login and captured by tests via pyotp.",
+  "seed_data_creation": "Test CRUD created + deleted announcements, events, team members, reviews, blogs with names prefixed TEST_ / slugs 'test-blog-*'. All were deleted at end of each test — no residual test data left in MongoDB. After tests, admin 2FA was reset back to fresh-setup state via db.admin_users update.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "To exercise admin endpoints, use TestClient flow in /app/backend/tests/test_admin_crud.py: POST /api/admin/login {password} → response has {requires_setup, secret}; then POST again with {password, otp=pyotp.TOTP(secret).now(), pending_secret=secret} → returns {token}. IMPORTANT: run this file with `pytest -n0` (no xdist) because the two-step setup flow races when parallel workers each request a fresh secret. If 2FA already enabled (secret unrecoverable), reset with: db.admin_users.update_many({'role':'admin'}, {'$set':{'totp_secret':None,'totp_enabled':False}}). NotificationBar uses body class 'has-announcement' to offset header — this is set by the client after fetch, so any header/offset snapshotting must wait ~2-3s after page load.",
+  "rca of the issue": "N/A — no bug found. Both requested features are working end-to-end: (1) public GET /api/announcements → NotificationBar component renders on homepage with correct text/link/close; (2) admin JWT-protected POST/PUT/DELETE for /api/announcements, /api/events, /api/team, /api/reviews, /api/blogs all succeed and immediately reflect on public GET endpoints (which are what the /events, /team, /blogs, and homepage-review sections consume)."
+}
