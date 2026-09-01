@@ -9,7 +9,6 @@ import {
   Linkedin,
   Youtube,
   Send,
-  Handshake,
   Users
 } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
@@ -62,12 +61,6 @@ const departmentEmails = [
     title: 'Franchisee & Founder Connect',
     email: 'director@etieducom.com',
     description: 'For franchise enquiries or to connect with our founder'
-  },
-  {
-    icon: Handshake,
-    title: 'Partnerships',
-    email: 'partnerships@etieducom.com',
-    description: 'For corporate partnerships, collaborations, and tie-ups'
   }
 ];
 

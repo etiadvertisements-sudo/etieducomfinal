@@ -29,6 +29,65 @@ import ProgramEnquiryForm from '@/components/ProgramEnquiryForm';
 
 // Complete program data with advanced content
 const programsData = {
+  'power-bi': {
+    title: 'Power BI',
+    tagline: 'Business Intelligence & Data Visualization',
+    description: 'Turn raw data into powerful business insights with Microsoft Power BI. This program takes you from data connection and modeling to building interactive dashboards and reports that drive decisions. You\'ll master DAX, Power Query, and data storytelling — skills in high demand across analytics, finance, and operations roles.',
+    duration: '3 Months',
+    icon: Database,
+    category: 'Tech Program',
+    level: 'Beginner to Intermediate',
+    certifications: ['Microsoft Certified: Power BI Data Analyst Associate (PL-300)'],
+    salary: '₹4 - 9 LPA',
+    highlights: [
+      'Connect and transform data with Power Query',
+      'Data modeling and relationships (star schema)',
+      'DAX formulas for advanced calculations',
+      'Interactive dashboards and report design',
+      'Row-level security and data refresh scheduling',
+      'Publishing and sharing via Power BI Service'
+    ],
+    curriculum: [
+      { module: 'Power BI Fundamentals', topics: ['Power BI Desktop & Service overview', 'Connecting to data sources', 'Import vs DirectQuery', 'Workspace basics'] },
+      { module: 'Data Preparation (Power Query)', topics: ['Cleaning and shaping data', 'Merging & appending queries', 'Data types & formatting', 'Query folding basics'] },
+      { module: 'Data Modeling & DAX', topics: ['Relationships & cardinality', 'Calculated columns & measures', 'DAX functions (CALCULATE, FILTER, time intelligence)', 'KPIs'] },
+      { module: 'Visualization & Reporting', topics: ['Charts, slicers & drill-through', 'Dashboard design best practices', 'Bookmarks & tooltips', 'Data storytelling'] },
+      { module: 'Sharing & Governance', topics: ['Publishing to Power BI Service', 'Row-level security', 'Scheduled refresh', 'Apps & workspaces'] }
+    ],
+    careers: ['Data Analyst', 'BI Developer', 'Reporting Analyst', 'MIS Executive', 'Business Analyst'],
+    prerequisites: 'Basic Excel knowledge recommended. No prior BI experience required.',
+    projects: ['Sales performance dashboard', 'Financial KPI report', 'Interactive HR analytics dashboard']
+  },
+
+  'sap': {
+    title: 'SAP',
+    tagline: 'Enterprise Resource Planning (ERP)',
+    description: 'Launch a career in enterprise software with our SAP program. Learn how large organizations run their core business processes on SAP, with hands-on exposure to navigation, core modules and real-world business scenarios. Ideal for commerce and IT students aiming for ERP consultant and end-user roles.',
+    duration: '4 Months',
+    icon: Layers,
+    category: 'Tech Program',
+    level: 'Beginner to Intermediate',
+    certifications: ['SAP Certified Application Associate (module-based)'],
+    salary: '₹4 - 12 LPA',
+    highlights: [
+      'SAP ERP navigation and core concepts',
+      'Hands-on with a functional module (FICO / MM / SD basics)',
+      'Understanding integrated business processes',
+      'Master data and transaction handling',
+      'Reporting within SAP',
+      'Interview and consultant readiness'
+    ],
+    curriculum: [
+      { module: 'SAP Foundations', topics: ['ERP concepts', 'SAP landscape & navigation', 'Organizational structure', 'Master vs transactional data'] },
+      { module: 'Core Module Basics', topics: ['Finance (FICO) overview', 'Materials Management (MM) overview', 'Sales & Distribution (SD) overview', 'Cross-module integration'] },
+      { module: 'Business Processes', topics: ['Procure-to-Pay', 'Order-to-Cash', 'Record-to-Report', 'End-user transactions'] },
+      { module: 'Reporting & Readiness', topics: ['Standard SAP reports', 'Working with documents', 'Case studies', 'Interview preparation'] }
+    ],
+    careers: ['SAP End User', 'SAP Functional Consultant (Associate)', 'ERP Support Analyst', 'Business Process Associate'],
+    prerequisites: 'Graduation or pursuing degree. Commerce/IT background helpful.',
+    projects: ['End-to-end Procure-to-Pay simulation', 'Order-to-Cash business scenario', 'SAP reporting case study']
+  },
+
   // Career Tracks
   'it-foundation': {
     title: 'IT Foundation',

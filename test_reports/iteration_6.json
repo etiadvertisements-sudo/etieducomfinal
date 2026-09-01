@@ -1,0 +1,24 @@
+{
+  "summary": "Frontend-only verification of 4 follow-up changes: (1) Partnerships/Media cards removed from /contact, (2) Power BI program added, (3) SAP program added, (4) hardcoded gtag.js G-FD31L36ZSK in head. Tested via curl (SSR HTML) + Playwright on desktop 1920 and mobile 390. All requested items PASS; homepage regression PASS.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Program detail enquiry form (/programs/power-bi, /programs/sap) and homepage Quick Enquiry", "issues": ["'Your Qualification' / 'Interested In' use the native browser <select> (default OS styling) instead of the shadcn Select component - inconsistent with rest of the design system. Pre-existing, not part of this change set."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "contact/page.js: departmentEmails now has a single entry rendered inside a space-y-4 stack, so layout stays intact on 1920 and 390 (verified 0px horizontal overflow). No dead imports (Handshake/Newspaper) remain.",
+    "layout.js: gtag.js loader + inline gtag('config','G-FD31L36ZSK') both render in <head>; window.gtag and window.dataLayer are defined at runtime. GTM-TRDQQ98M loader still present. NOTE: the chained request 'gtag/js?id=G-FD31L36ZSK&cx=c&gtm=...' shows as requestfailed inside the sandboxed test browser (egress restriction), while a GA collect hit for the pre-existing GTM property (G-T07GBKZGLL) also failed - this is environment network blocking, not a code defect; verify live in GA/Ads realtime after deploy."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (frontend-only request)", "frontend": "100%"},
+  "seed_data_creation": "None. No leads submitted (CRM is live) per instruction.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Verified: /contact has no partnerships@/media@/'Partnerships' text (desktop+mobile), retains 'Franchisee & Founder Connect -> director@etieducom.com' and 'General & Student Queries -> helpdesk@etieducom.com'. /programs shows Power BI (3 Months) and SAP (4 Months) cards under the 'Tech Programs' h2 section; card click navigates to detail pages. /programs/power-bi renders title 'Power BI', tagline 'Business Intelligence & Data Visualization', curriculum/certification/career sections and 1 enquiry form. /programs/sap renders 'SAP' + 'Enterprise Resource Planning (ERP)' + 1 form. Header mega menu (hover 'Programs') lists Power BI & SAP; clicking SAP navigates to /programs/sap. Homepage regression OK: announcement bar, Our Recruiters, 'Our Students, Placed' (heading text is 'Our Students, Placed', not 'Placed Students'), Recent Events all render; nav links Contact/Franchise clickable; 0 broken images; no console errors. TIP: a[href='/programs/power-bi'] also matches the hidden header mega-menu link - scope selectors with 'main ' prefix.",
+  "rca_of_the_issue": "No defects found in the changed scope."
+}

@@ -176,6 +176,25 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
+
+        {/* Google tag (gtag.js) — Google Ads / GA4 : G-FD31L36ZSK */}
+        <Script
+          id="gtag-js-src"
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-FD31L36ZSK"
+        />
+        <Script
+          id="gtag-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-FD31L36ZSK');
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>
         {/* GTM noscript fallback */}

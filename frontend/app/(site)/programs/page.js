@@ -65,6 +65,8 @@ const programCategories = [
       { id: 'web-designing', title: 'Web Designing', icon: Globe, duration: '3 Months', desc: 'HTML, CSS, responsive design' },
       { id: 'web-development', title: 'Web Development', icon: Code, duration: '6 Months', desc: 'Full-stack web development' },
       { id: 'data-analytics', title: 'Data Analytics', icon: BarChart3, duration: '4 Months', desc: 'Data analysis, visualization, and insights' },
+      { id: 'power-bi', title: 'Power BI', icon: BarChart3, duration: '3 Months', desc: 'Business intelligence dashboards with Power BI & DAX' },
+      { id: 'sap', title: 'SAP', icon: Briefcase, duration: '4 Months', desc: 'Enterprise ERP concepts and core SAP modules' },
       { id: 'ai-beginners', title: 'AI For Beginners', icon: Bot, duration: '2 Months', desc: 'Introduction to artificial intelligence' },
       { id: 'ai-engineering', title: 'AI Engineering', icon: Cpu, duration: '6 Months', desc: 'Advanced AI and machine learning' }
     ]
