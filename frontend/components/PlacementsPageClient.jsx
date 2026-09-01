@@ -29,11 +29,6 @@ export function PlacementCard({ s }) {
             </span>
           </div>
         )}
-        {s.package && (
-          <span className="absolute top-3 right-3 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
-            {s.package}
-          </span>
-        )}
       </div>
 
       <div className="p-5 flex flex-col flex-1">

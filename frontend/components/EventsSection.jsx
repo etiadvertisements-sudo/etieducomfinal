@@ -35,7 +35,7 @@ export default function EventsSection() {
         if (response.ok) {
           const data = await response.json();
           if (data.length > 0) {
-            setEvents(data.slice(0, 2));
+            setEvents(data.slice(0, 4));
           }
         }
       } catch (error) {
