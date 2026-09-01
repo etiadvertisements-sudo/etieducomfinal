@@ -341,6 +341,7 @@ export default function Header() {
                 </div>
               </div>
 
+              <Link href="/placements" className="nav-link" data-testid="nav-placements">Placements</Link>
               <Link href="/franchise" className="nav-link">Franchise</Link>
               <Link href="/contact" className="nav-link">Contact</Link>
             </nav>
@@ -466,6 +467,7 @@ export default function Header() {
               )}
             </div>
 
+            <Link href="/placements" className="mobile-nav-link block">Placements</Link>
             <Link href="/franchise" className="mobile-nav-link block">Franchise</Link>
             <Link href="/contact" className="mobile-nav-link block">Contact</Link>
           </nav>

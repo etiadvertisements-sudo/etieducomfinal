@@ -27,6 +27,7 @@ import BlogsSection from '@/components/BlogsSection';
 import AnimatedStatsSection from '@/components/AnimatedStatsSection';
 import PartnersSection from '@/components/PartnersSection';
 import AboutPreviewSection from '@/components/AboutPreviewSection';
+import PlacementsSection from '@/components/PlacementsSection';
 import WhatsAppButton from '@/components/WhatsAppButton';
 
 export const metadata = {
@@ -315,6 +316,9 @@ export default function HomePage() {
 
       {/* Partners Section */}
       <PartnersSection />
+
+      {/* Placements Section */}
+      <PlacementsSection />
 
       {/* Events Section */}
       <EventsSection />

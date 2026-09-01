@@ -1175,6 +1175,60 @@ class BranchResponse(BaseModel):
     created_at: str
 
 
+# ============ Placed Student (Placements) Models ============
+
+class PlacedStudent(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    photo_url: Optional[str] = None
+    company: str
+    role: Optional[str] = None
+    package: Optional[str] = None
+    course: Optional[str] = None
+    testimonial: Optional[str] = None
+    order: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class PlacedStudentCreate(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    photo_url: Optional[str] = None
+    company: str = Field(..., min_length=1, max_length=150)
+    role: Optional[str] = None
+    package: Optional[str] = None
+    course: Optional[str] = None
+    testimonial: Optional[str] = None
+    order: int = 0
+
+
+class PlacedStudentUpdate(BaseModel):
+    name: Optional[str] = None
+    photo_url: Optional[str] = None
+    company: Optional[str] = None
+    role: Optional[str] = None
+    package: Optional[str] = None
+    course: Optional[str] = None
+    testimonial: Optional[str] = None
+    order: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+class PlacedStudentResponse(BaseModel):
+    id: str
+    name: str
+    photo_url: Optional[str]
+    company: str
+    role: Optional[str]
+    package: Optional[str]
+    course: Optional[str]
+    testimonial: Optional[str]
+    order: int
+    is_active: bool
+    created_at: str
+
+
 # Store chat sessions in memory (for simplicity)
 chat_sessions = {}
 
@@ -4165,6 +4219,58 @@ async def delete_team_member(member_id: str, admin=Depends(get_current_admin)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Team member not found")
     return {"message": "Team member deleted successfully"}
+
+
+# ============ Placement (Placed Students) Routes ============
+
+def _placement_response(r):
+    return PlacedStudentResponse(
+        id=r['id'], name=r['name'], photo_url=r.get('photo_url'), company=r['company'],
+        role=r.get('role'), package=r.get('package'), course=r.get('course'),
+        testimonial=r.get('testimonial'), order=r.get('order', 0), is_active=r.get('is_active', True),
+        created_at=r['created_at'] if isinstance(r['created_at'], str) else r['created_at'].isoformat()
+    )
+
+
+@api_router.post("/placements", response_model=PlacedStudentResponse)
+async def create_placement(input: PlacedStudentCreate, admin=Depends(get_current_admin)):
+    try:
+        obj = PlacedStudent(**input.model_dump())
+        doc = obj.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.placements.insert_one(doc)
+        return _placement_response(doc)
+    except Exception as e:
+        logging.error(f"Error creating placement: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create placement")
+
+
+@api_router.get("/placements", response_model=List[PlacedStudentResponse])
+async def get_placements(active_only: bool = True, latest: bool = False, limit: int = 200):
+    query = {"is_active": True} if active_only else {}
+    sort = [("created_at", -1)] if latest else [("order", 1), ("created_at", -1)]
+    rows = await db.placements.find(query, {"_id": 0}).sort(sort).to_list(min(max(limit, 1), 500))
+    return [_placement_response(r) for r in rows]
+
+
+@api_router.put("/placements/{placement_id}", response_model=PlacedStudentResponse)
+async def update_placement(placement_id: str, input: PlacedStudentUpdate, admin=Depends(get_current_admin)):
+    update_data = {k: v for k, v in input.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No data to update")
+    result = await db.placements.update_one({"id": placement_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Placement not found")
+    r = await db.placements.find_one({"id": placement_id}, {"_id": 0})
+    return _placement_response(r)
+
+
+@api_router.delete("/placements/{placement_id}")
+async def delete_placement(placement_id: str, admin=Depends(get_current_admin)):
+    result = await db.placements.delete_one({"id": placement_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Placement not found")
+    return {"message": "Placement deleted successfully"}
 
 
 # ============ Branch Routes ============

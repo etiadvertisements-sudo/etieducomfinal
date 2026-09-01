@@ -1004,6 +1004,75 @@ function ReviewsTab() {
   );
 }
 
+// Placements Tab
+function PlacementsTab() {
+  const empty = { name: '', company: '', role: '', package: '', course: '', testimonial: '', photo_url: '', order: 0 };
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [show, setShow] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [form, setForm] = useState(empty);
+
+  const load = async () => { setLoading(true); try { const r = await fetch(`${API_URL}/api/placements?active_only=false`); if (r.ok) setRows(await r.json()); } catch {} setLoading(false); };
+  useEffect(() => { load(); }, []);
+
+  const openAdd = () => { setEditId(null); setForm(empty); setShow(true); };
+  const openEdit = (p) => { setEditId(p.id); setForm({ name: p.name || '', company: p.company || '', role: p.role || '', package: p.package || '', course: p.course || '', testimonial: p.testimonial || '', photo_url: p.photo_url || '', order: p.order || 0 }); setShow(true); };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const payload = { name: form.name, company: form.company, order: Number(form.order) || 0 };
+    ['role', 'package', 'course', 'testimonial', 'photo_url'].forEach((k) => { if (form[k]) payload[k] = form[k]; });
+    const url = editId ? `${API_URL}/api/placements/${editId}` : `${API_URL}/api/placements`;
+    const r = await adminFetch(url, { method: editId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (r.ok) { toast.success(editId ? 'Placement updated' : 'Placement added'); setShow(false); setForm(empty); setEditId(null); load(); }
+    else { const err = await r.json().catch(() => null); toast.error(Array.isArray(err?.detail) ? err.detail[0]?.msg : (err?.detail || 'Failed')); }
+  };
+
+  const del = async (id) => { if (!confirm('Delete this placement?')) return; const r = await adminFetch(`${API_URL}/api/placements/${id}`, { method: 'DELETE' }); if (r.ok) { toast.success('Deleted'); load(); } };
+
+  if (loading) return <Spinner />;
+  return (
+    <div className="space-y-4" data-testid="placements-tab">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Placed Students ({rows.length})</h2>
+        <button onClick={openAdd} className="btn-primary text-sm" data-testid="placement-add-btn"><Plus className="w-4 h-4" /> Add</button>
+      </div>
+      <Modal isOpen={show} onClose={() => setShow(false)} title={editId ? 'Edit Placement' : 'Add Placed Student'}>
+        <form onSubmit={submit} className="space-y-4">
+          <input className="form-input" placeholder="Student Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required data-testid="placement-name" />
+          <input className="form-input" placeholder="Company *" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} required data-testid="placement-company" />
+          <input className="form-input" placeholder="Role / Designation (e.g. Software Engineer)" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} />
+          <input className="form-input" placeholder="Package (e.g. ₹6 LPA)" value={form.package} onChange={(e) => setForm({ ...form, package: e.target.value })} />
+          <input className="form-input" placeholder="Course / Track (e.g. Software Development)" value={form.course} onChange={(e) => setForm({ ...form, course: e.target.value })} />
+          <textarea className="form-input min-h-[80px]" placeholder="Testimonial (optional)" value={form.testimonial} onChange={(e) => setForm({ ...form, testimonial: e.target.value })} />
+          <ImageUploadField value={form.photo_url} onChange={(url) => setForm({ ...form, photo_url: url })} label="Student Photo" />
+          <input className="form-input" type="number" placeholder="Display Order" value={form.order} onChange={(e) => setForm({ ...form, order: e.target.value })} />
+          <button type="submit" className="btn-primary w-full justify-center" data-testid="placement-save"><Save className="w-4 h-4" /> {editId ? 'Update' : 'Save'}</button>
+        </form>
+      </Modal>
+      {rows.length === 0 ? <div className="text-center py-12 bg-gray-50 rounded-xl"><Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-3" /><p className="text-gray-500">No placements yet</p></div> : (
+        <div className="grid md:grid-cols-2 gap-4">{rows.map((p) => (
+          <div key={p.id} className="bg-white rounded-xl border p-4 flex justify-between items-start gap-3">
+            <div className="flex gap-3">
+              {p.photo_url ? <img src={p.photo_url} alt={p.name} className="w-14 h-14 rounded-full object-cover" /> : <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">{p.name.slice(0,1)}</div>}
+              <div>
+                <h3 className="font-bold text-gray-900">{p.name}</h3>
+                <p className="text-sm text-primary">{p.role}</p>
+                <p className="text-sm text-gray-500">{p.company}{p.package ? ` · ${p.package}` : ''}</p>
+              </div>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button onClick={() => openEdit(p)} className="text-gray-500 hover:text-primary"><Edit className="w-4 h-4" /></button>
+              <button onClick={() => del(p.id)} className="text-red-500"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          </div>
+        ))}</div>
+      )}
+    </div>
+  );
+}
+
 // Events Tab
 function EventsTab() {
   const [events, setEvents] = useState([]);
@@ -2839,6 +2908,7 @@ export default function SecureAdminPage() {
     { id: 'blogs', label: 'Blogs', icon: FileText },
     { id: 'authors', label: 'Authors', icon: UserCog },
     { id: 'reviews', label: 'Reviews', icon: Star },
+    { id: 'placements', label: 'Placements', icon: Briefcase },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'partners', label: 'Partners', icon: Handshake },
     { id: 'universities', label: 'Universities', icon: Building2 },
@@ -2868,6 +2938,7 @@ export default function SecureAdminPage() {
       case 'blogs': return <BlogsTab />;
       case 'authors': return <AuthorsTab />;
       case 'reviews': return <ReviewsTab />;
+      case 'placements': return <PlacementsTab />;
       case 'events': return <EventsTab />;
       case 'partners': return <PartnersTab />;
       case 'universities': return <UniversitiesTab />;
