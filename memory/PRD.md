@@ -44,3 +44,9 @@
 ## Backlog (optional)
 - Split server.py / admin page.js into modules (large files).
 - Add field-level validation labels in admin modals; validate job_id references in /api/applications.
+
+## Fix Session — 2026-09-01 (contact emails + events upcoming/past + GTM)
+- Contact page: removed Media Enquiries (media@) card; 'Franchisee & Founder Connect' -> director@etieducom.com; 'General & Student Queries' -> helpdesk@etieducom.com; Partnerships unchanged.
+- Events page (/events): EventsPageClient split into 'Upcoming Events' (future-dated) and 'Past Events' (past-dated). Seeded 1 upcoming event for demo. Homepage keeps 'Recent Events' (completed).
+- GTM connected: GTM-TRDQQ98M (app/layout.js). GA/ads fire through this container.
+- Verified via testing agent iteration_5 (100%).

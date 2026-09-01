@@ -62,9 +62,9 @@ export default function AnnouncementBar() {
 
   return (
     <div className="announcement-bar" data-testid="announcement-bar" ref={barRef}>
-      <div className="container-main relative flex items-center justify-center gap-2">
+      <div className="container-main relative flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 pr-8 sm:pr-0">
         <Megaphone className="w-4 h-4 flex-shrink-0 hidden sm:block" />
-        <span data-testid="announcement-text" className="text-xs sm:text-sm px-6 sm:px-0">{a.text}</span>
+        <span data-testid="announcement-text" className="text-xs sm:text-sm">{a.text}</span>
         {a.link && (
           <Link
             href={a.link}
@@ -76,7 +76,7 @@ export default function AnnouncementBar() {
         )}
         <button
           onClick={() => setDismissed(true)}
-          className="absolute right-0 p-1 hover:opacity-70"
+          className="absolute right-0 top-1/2 -translate-y-1/2 p-1 hover:opacity-70"
           aria-label="Dismiss announcement"
           data-testid="announcement-dismiss"
         >
