@@ -1,0 +1,99 @@
+# ETI Educom robots.txt — last updated 2026-01
+
+# ─── Default: allow everything except admin & internal API ───
+User-agent: *
+Allow: /
+
+# Private/admin areas (never index)
+Disallow: /admin
+Disallow: /admin/
+Disallow: /eti-manage-x9k2m
+Disallow: /eti-manage-x9k2m/
+
+# Internal backend API (not user-facing pages)
+Disallow: /api/
+# But DO allow uploaded media so Google can index user-facing images
+Allow: /api/uploads/
+
+# Don't index thank-you / share confirmations
+Disallow: /thank-you
+Disallow: /share-your-experience/
+
+# ─── Google ───
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /eti-manage-x9k2m
+Disallow: /eti-manage-x9k2m/
+Disallow: /api/
+Allow: /api/uploads/
+Disallow: /thank-you
+
+# Image bot — index all images, block only admin
+User-agent: Googlebot-Image
+Allow: /
+Disallow: /admin
+Disallow: /eti-manage-x9k2m
+
+# Mobile bot
+User-agent: Googlebot-Mobile
+Allow: /
+
+# ─── Bing ───
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /eti-manage-x9k2m
+Disallow: /eti-manage-x9k2m/
+Disallow: /api/
+Allow: /api/uploads/
+Crawl-delay: 2
+
+# ─── Block AI training crawlers (preserve content rights) ───
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+# ─── Aggressive SEO bots — slow down or block ───
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# ─── Sitemaps ───
+Sitemap: https://www.etieducom.com/sitemap.xml
