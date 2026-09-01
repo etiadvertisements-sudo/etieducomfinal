@@ -32,60 +32,60 @@ const programsData = {
   'power-bi': {
     title: 'Power BI',
     tagline: 'Business Intelligence & Data Visualization',
-    description: 'Turn raw data into powerful business insights with Microsoft Power BI. This program takes you from data connection and modeling to building interactive dashboards and reports that drive decisions. You\'ll master DAX, Power Query, and data storytelling — skills in high demand across analytics, finance, and operations roles.',
-    duration: '3 Months',
+    description: 'Become job-ready in Microsoft Power BI in just 1 month with this intensive, industry-aligned program. You\'ll learn the exact workflow analysts use in companies — connecting to data, cleaning it with Power Query, building a robust data model, writing DAX, and delivering interactive dashboards that leaders actually use. The curriculum is mapped to Microsoft\'s PL-300 (Power BI Data Analyst) certification and built around real business datasets.',
+    duration: '1 Month',
     icon: Database,
     category: 'Tech Program',
     level: 'Beginner to Intermediate',
-    certifications: ['Microsoft Certified: Power BI Data Analyst Associate (PL-300)'],
+    certifications: ['Microsoft Certified: Power BI Data Analyst Associate (PL-300)', 'ETI Educom Power BI Completion Certificate'],
     salary: '₹4 - 9 LPA',
     highlights: [
-      'Connect and transform data with Power Query',
-      'Data modeling and relationships (star schema)',
-      'DAX formulas for advanced calculations',
-      'Interactive dashboards and report design',
-      'Row-level security and data refresh scheduling',
-      'Publishing and sharing via Power BI Service'
+      'Connect to 10+ data sources (Excel, CSV, SQL, Web) and transform with Power Query (M)',
+      'Build a clean star-schema data model with relationships',
+      'Master DAX: measures, CALCULATE, filter context & time-intelligence',
+      'Design interactive dashboards with slicers, drill-through & bookmarks',
+      'Row-level security (RLS), scheduled refresh & Power BI Service',
+      'PL-300 exam preparation with mock tests',
+      'Capstone: an end-to-end business dashboard for your portfolio'
     ],
     curriculum: [
-      { module: 'Power BI Fundamentals', topics: ['Power BI Desktop & Service overview', 'Connecting to data sources', 'Import vs DirectQuery', 'Workspace basics'] },
-      { module: 'Data Preparation (Power Query)', topics: ['Cleaning and shaping data', 'Merging & appending queries', 'Data types & formatting', 'Query folding basics'] },
-      { module: 'Data Modeling & DAX', topics: ['Relationships & cardinality', 'Calculated columns & measures', 'DAX functions (CALCULATE, FILTER, time intelligence)', 'KPIs'] },
-      { module: 'Visualization & Reporting', topics: ['Charts, slicers & drill-through', 'Dashboard design best practices', 'Bookmarks & tooltips', 'Data storytelling'] },
-      { module: 'Sharing & Governance', topics: ['Publishing to Power BI Service', 'Row-level security', 'Scheduled refresh', 'Apps & workspaces'] }
+      { module: 'Week 1 — Foundations & Data Prep', topics: ['Power BI Desktop, Service & Mobile overview', 'Connecting to Excel/CSV/SQL/Web sources', 'Import vs DirectQuery', 'Power Query Editor: clean, split, replace, unpivot', 'Merge & append queries', 'Data types, formatting & query folding'] },
+      { module: 'Week 2 — Data Modeling & DAX', topics: ['Star schema & relationships (1:many)', 'Calculated columns vs measures', 'Core DAX: SUM, AVERAGE, COUNTROWS', 'CALCULATE & filter context', 'Time-intelligence (YTD, MTD, YoY)', 'Variables (VAR) & iterators (SUMX)'] },
+      { module: 'Week 3 — Visualization & Storytelling', topics: ['Choosing the right visual', 'Slicers, filters, drill-down & drill-through', 'Bookmarks, buttons & tooltips', 'Conditional formatting & KPIs', 'Dashboard layout & UX best practices', 'Data storytelling for stakeholders'] },
+      { module: 'Week 4 — Publish, Govern & Certify', topics: ['Publishing to Power BI Service', 'Workspaces, Apps & sharing', 'Row-level security (RLS)', 'Scheduled refresh & gateways', 'PL-300 exam prep + mock test', 'Capstone project & portfolio review'] }
     ],
-    careers: ['Data Analyst', 'BI Developer', 'Reporting Analyst', 'MIS Executive', 'Business Analyst'],
-    prerequisites: 'Basic Excel knowledge recommended. No prior BI experience required.',
-    projects: ['Sales performance dashboard', 'Financial KPI report', 'Interactive HR analytics dashboard']
+    careers: ['Data Analyst', 'Power BI Developer', 'BI Analyst', 'Reporting / MIS Analyst', 'Business Analyst'],
+    prerequisites: 'Basic Excel knowledge recommended. No prior BI or coding experience required.',
+    projects: ['Sales & profitability dashboard (star schema + DAX)', 'Financial KPI report with time-intelligence', 'HR/operations analytics dashboard with RLS', 'End-to-end capstone dashboard for portfolio']
   },
 
   'sap': {
-    title: 'SAP',
-    tagline: 'Enterprise Resource Planning (ERP)',
-    description: 'Launch a career in enterprise software with our SAP program. Learn how large organizations run their core business processes on SAP, with hands-on exposure to navigation, core modules and real-world business scenarios. Ideal for commerce and IT students aiming for ERP consultant and end-user roles.',
-    duration: '4 Months',
+    title: 'SAP ERP',
+    tagline: 'Enterprise Resource Planning on SAP S/4HANA',
+    description: 'Build a career in enterprise software with our industry-aligned SAP ERP program. You\'ll understand how large organizations run finance, procurement and sales on SAP S/4HANA, with hands-on navigation and real business-process scenarios (Procure-to-Pay, Order-to-Cash, Record-to-Report). Designed for commerce and IT graduates targeting SAP end-user and associate functional-consultant roles, the program blends core concepts with a focused specialization in a functional module.',
+    duration: '3 Months',
     icon: Layers,
     category: 'Tech Program',
     level: 'Beginner to Intermediate',
-    certifications: ['SAP Certified Application Associate (module-based)'],
+    certifications: ['SAP Certified Application Associate (module-based, e.g. S/4HANA Finance / Sourcing & Procurement)', 'ETI Educom SAP ERP Completion Certificate'],
     salary: '₹4 - 12 LPA',
     highlights: [
-      'SAP ERP navigation and core concepts',
-      'Hands-on with a functional module (FICO / MM / SD basics)',
-      'Understanding integrated business processes',
-      'Master data and transaction handling',
-      'Reporting within SAP',
-      'Interview and consultant readiness'
+      'SAP S/4HANA navigation, Fiori launchpad & system landscape',
+      'Core ERP concepts: organizational structure, master & transactional data',
+      'Specialize in a functional module — FICO, MM or SD',
+      'End-to-end business processes: Procure-to-Pay, Order-to-Cash, Record-to-Report',
+      'Integration between FI, MM and SD modules',
+      'Standard SAP reporting & document handling',
+      'Consultant readiness: resume, interview & real-world case studies'
     ],
     curriculum: [
-      { module: 'SAP Foundations', topics: ['ERP concepts', 'SAP landscape & navigation', 'Organizational structure', 'Master vs transactional data'] },
-      { module: 'Core Module Basics', topics: ['Finance (FICO) overview', 'Materials Management (MM) overview', 'Sales & Distribution (SD) overview', 'Cross-module integration'] },
-      { module: 'Business Processes', topics: ['Procure-to-Pay', 'Order-to-Cash', 'Record-to-Report', 'End-user transactions'] },
-      { module: 'Reporting & Readiness', topics: ['Standard SAP reports', 'Working with documents', 'Case studies', 'Interview preparation'] }
+      { module: 'Month 1 — SAP Foundations', topics: ['ERP & SAP S/4HANA overview', 'SAP GUI & Fiori navigation', 'System landscape (Dev/QA/Prod)', 'Enterprise/organizational structure', 'Master data vs transactional data', 'Introduction to business processes'] },
+      { module: 'Month 2 — Functional Module (FICO / MM / SD)', topics: ['FICO: GL, AP, AR, asset accounting basics', 'MM: material master, purchase requisition & PO', 'SD: customer master, sales order, delivery & billing', 'Configuration vs end-user tasks', 'Module-specific master data', 'Hands-on transactions in the module'] },
+      { module: 'Month 3 — Processes, Reporting & Readiness', topics: ['Procure-to-Pay (P2P) end-to-end', 'Order-to-Cash (O2C) end-to-end', 'Record-to-Report (R2R) overview', 'Cross-module integration (FI-MM-SD)', 'Standard SAP reports & document flow', 'Case studies, interview prep & capstone'] }
     ],
-    careers: ['SAP End User', 'SAP Functional Consultant (Associate)', 'ERP Support Analyst', 'Business Process Associate'],
-    prerequisites: 'Graduation or pursuing degree. Commerce/IT background helpful.',
-    projects: ['End-to-end Procure-to-Pay simulation', 'Order-to-Cash business scenario', 'SAP reporting case study']
+    careers: ['SAP End User', 'SAP Associate Functional Consultant (FICO / MM / SD)', 'ERP Support Analyst', 'Business Process Associate', 'SAP Data / MIS Executive'],
+    prerequisites: 'Graduate or final-year student. Commerce background helps for FICO; any stream welcome for MM/SD.',
+    projects: ['Procure-to-Pay simulation in SAP', 'Order-to-Cash business scenario', 'Module configuration & master-data setup', 'SAP reporting & documentation case study']
   },
 
   // Career Tracks

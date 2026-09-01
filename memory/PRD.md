@@ -53,6 +53,6 @@
 
 ## Fix Session — 2026-09-01 (contact card, new programs, gtag)
 - Contact page: removed 'Partnerships' card (and earlier Media card); only 'Franchisee & Founder Connect' -> director@ remains in dept emails; 'General & Student Queries' -> helpdesk@.
-- Added 2 programs: Power BI (/programs/power-bi) and SAP (/programs/sap) — entries in programsData ([programId]/page.js), cards on /programs (Tech Programs), and Header mega menu.
+- Added 2 programs: Power BI (1 Month, PL-300 aligned) and SAP ERP (3 Months, S/4HANA FICO/MM/SD) — entries in programsData ([programId]/page.js), cards on /programs (Tech Programs), and Header mega menu.
 - Analytics: existing GTM container = GTM-TRDQQ98M (app/layout.js). Added hardcoded Google gtag.js for G-FD31L36ZSK (Google Ads/GA4) in <head>.
 - Verified via testing agent iteration_6 (100%).

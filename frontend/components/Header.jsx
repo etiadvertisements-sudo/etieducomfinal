@@ -54,8 +54,8 @@ const programCategories = [
       { id: 'web-designing', title: 'Web Designing', icon: Globe, duration: '3 Months' },
       { id: 'web-development', title: 'Web Development', icon: Code, duration: '6 Months' },
       { id: 'data-analytics', title: 'Data Analytics', icon: BarChart3, duration: '4 Months' },
-      { id: 'power-bi', title: 'Power BI', icon: BarChart3, duration: '3 Months' },
-      { id: 'sap', title: 'SAP', icon: Briefcase, duration: '4 Months' },
+      { id: 'power-bi', title: 'Power BI', icon: BarChart3, duration: '1 Month' },
+      { id: 'sap', title: 'SAP ERP', icon: Briefcase, duration: '3 Months' },
       { id: 'ai-beginners', title: 'AI For Beginners', icon: Bot, duration: '2 Months' },
       { id: 'ai-engineering', title: 'AI Engineering', icon: Cpu, duration: '6 Months' }
     ]
