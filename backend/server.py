@@ -1343,9 +1343,17 @@ async def create_event(input: EventCreate, admin=Depends(get_current_admin)):
 
 
 @api_router.get("/events", response_model=List[EventResponse])
-async def get_events(active_only: bool = True, limit: int = 100):
+async def get_events(active_only: bool = True, when: Optional[str] = None, limit: int = 100):
     query = {"is_active": True} if active_only else {}
-    events = await db.events.find(query, {"_id": 0}).sort("event_date", 1).to_list(limit)
+    today = datetime.now(timezone.utc).date().isoformat()
+    sort_dir = 1
+    if when == "upcoming":
+        query["event_date"] = {"$gte": today}
+        sort_dir = 1  # soonest first
+    elif when == "past":
+        query["event_date"] = {"$lt": today}
+        sort_dir = -1  # most recent past first
+    events = await db.events.find(query, {"_id": 0}).sort("event_date", sort_dir).to_list(min(max(limit, 1), 200))
     return [
         EventResponse(
             id=e['id'], title=e['title'], description=e['description'],

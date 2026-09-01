@@ -31,11 +31,11 @@ export default function EventsSection() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/events?upcoming=true`);
+        const response = await fetch(`${API_URL}/api/events?when=upcoming`);
         if (response.ok) {
           const data = await response.json();
           if (data.length > 0) {
-            setEvents(data.slice(0, 4));
+            setEvents(data.slice(0, 2));
           }
         }
       } catch (error) {
