@@ -9,7 +9,6 @@ import {
   Linkedin,
   Youtube,
   Send,
-  Newspaper,
   Handshake,
   Users
 } from 'lucide-react';
@@ -59,21 +58,15 @@ const contactInfo = [
 
 const departmentEmails = [
   {
-    icon: Newspaper,
-    title: 'Media Enquiries',
-    email: 'media@etieducom.com',
-    description: 'For press releases, interviews, and media coverage'
-  },
-  {
     icon: Users,
     title: 'Franchisee & Founder Connect',
-    email: 'krishna@etieducom.com',
+    email: 'director@etieducom.com',
     description: 'For franchise enquiries or to connect with our founder'
   },
   {
     icon: Handshake,
     title: 'Partnerships',
-    email: 'partnerships@etieducom.com',
+    email: 'helpdesk@etieducom.com',
     description: 'For corporate partnerships, collaborations, and tie-ups'
   }
 ];

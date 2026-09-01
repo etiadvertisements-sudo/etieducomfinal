@@ -20,6 +20,31 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
+    ],
+    "/(site)/about/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(site)/about/page.js"
+    ],
+    "/(site)/founder/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(site)/founder/page.js"
+    ],
+    "/(site)/hire-from-us/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(site)/hire-from-us/page.js"
+    ],
+    "/(site)/join-team/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(site)/join-team/page.js"
+    ],
+    "/(site)/contact/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(site)/contact/page.js"
     ]
   }
 }

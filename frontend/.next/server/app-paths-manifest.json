@@ -1,3 +1,7 @@
 {
-  "/(site)/page": "app/(site)/page.js"
+  "/(site)/about/page": "app/(site)/about/page.js",
+  "/(site)/founder/page": "app/(site)/founder/page.js",
+  "/(site)/hire-from-us/page": "app/(site)/hire-from-us/page.js",
+  "/(site)/join-team/page": "app/(site)/join-team/page.js",
+  "/(site)/contact/page": "app/(site)/contact/page.js"
 }

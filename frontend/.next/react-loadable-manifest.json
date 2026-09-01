@@ -1,6 +1,24 @@
 {
+  "components/ContactForm.jsx -> @/lib/track": {
+    "id": "components/ContactForm.jsx -> @/lib/track",
+    "files": [
+      "static/chunks/_app-pages-browser_lib_track_js.js"
+    ]
+  },
   "components/HeroForm.jsx -> @/lib/track": {
     "id": "components/HeroForm.jsx -> @/lib/track",
+    "files": [
+      "static/chunks/_app-pages-browser_lib_track_js.js"
+    ]
+  },
+  "components/HiringForm.jsx -> @/lib/track": {
+    "id": "components/HiringForm.jsx -> @/lib/track",
+    "files": [
+      "static/chunks/_app-pages-browser_lib_track_js.js"
+    ]
+  },
+  "components/JoinTeamClient.jsx -> @/lib/track": {
+    "id": "components/JoinTeamClient.jsx -> @/lib/track",
     "files": [
       "static/chunks/_app-pages-browser_lib_track_js.js"
     ]
