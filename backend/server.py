@@ -1790,6 +1790,9 @@ async def create_application(input: JobApplicationCreate, request: Request = Non
         doc['created_at'] = doc['created_at'].isoformat()
         await db.job_applications.insert_one(doc)
 
+        # Send to CRM
+        await send_lead_to_crm(name=input.name, phone=input.phone, email=input.email, source="Job Application", program_name=input.job_id)
+
         # Server-side Meta CAPI Lead event for job application
         await meta_send_lead_event(
             lead_type="job_application", request=request, name=input.name, email=input.email,
@@ -4228,7 +4231,7 @@ class Partner(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     logo_url: str = Field(..., min_length=1)
     website_url: Optional[str] = None
-    partner_type: str = Field(..., pattern="^(placement|certification)$")  # placement or certification
+    partner_type: str = Field(..., pattern="^(placement|certification|recruiter)$")  # placement, certification or recruiter
     order: int = 0
     is_active: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -4238,7 +4241,7 @@ class PartnerCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     logo_url: str = Field(..., min_length=1)
     website_url: Optional[str] = None
-    partner_type: str = Field(..., pattern="^(placement|certification)$")
+    partner_type: str = Field(..., pattern="^(placement|certification|recruiter)$")
     order: int = 0
     is_active: bool = True
 
@@ -4321,6 +4324,103 @@ async def delete_partner(partner_id: str, admin=Depends(get_current_admin)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Partner not found")
     return {"message": "Partner deleted successfully"}
+
+
+# ============ Placed Students (Placements) ============
+
+class PlacedStudent(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = Field(..., min_length=1, max_length=100)
+    photo_url: str = Field(..., min_length=1)
+    company_name: str = Field(..., min_length=1, max_length=100)
+    position: str = Field(..., min_length=1, max_length=100)
+    company_logo_url: Optional[str] = None
+    order: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class PlacedStudentCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    photo_url: str = Field(..., min_length=1)
+    company_name: str = Field(..., min_length=1, max_length=100)
+    position: str = Field(..., min_length=1, max_length=100)
+    company_logo_url: Optional[str] = None
+    order: int = 0
+    is_active: bool = True
+
+
+class PlacedStudentUpdate(BaseModel):
+    name: Optional[str] = None
+    photo_url: Optional[str] = None
+    company_name: Optional[str] = None
+    position: Optional[str] = None
+    company_logo_url: Optional[str] = None
+    order: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+class PlacedStudentResponse(BaseModel):
+    id: str
+    name: str
+    photo_url: str
+    company_name: str
+    position: str
+    company_logo_url: Optional[str] = None
+    order: int
+    is_active: bool
+    created_at: str
+
+
+def _placed_response(s: dict) -> PlacedStudentResponse:
+    return PlacedStudentResponse(
+        id=s['id'], name=s['name'], photo_url=s['photo_url'],
+        company_name=s['company_name'], position=s['position'],
+        company_logo_url=s.get('company_logo_url'),
+        order=s.get('order', 0), is_active=s.get('is_active', True),
+        created_at=s['created_at'] if isinstance(s['created_at'], str) else s['created_at'].isoformat()
+    )
+
+
+@api_router.post("/placed-students", response_model=PlacedStudentResponse)
+async def create_placed_student(input: PlacedStudentCreate, admin=Depends(get_current_admin)):
+    try:
+        obj = PlacedStudent(**input.model_dump())
+        doc = obj.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.placed_students.insert_one(doc)
+        return _placed_response(doc)
+    except Exception as e:
+        logging.error(f"Error creating placed student: {e}")
+        raise HTTPException(status_code=500, detail="Failed to add placed student")
+
+
+@api_router.get("/placed-students", response_model=List[PlacedStudentResponse])
+async def get_placed_students(active_only: bool = True, limit: int = 100):
+    query = {"is_active": True} if active_only else {}
+    students = await db.placed_students.find(query, {"_id": 0}).sort("order", 1).to_list(limit)
+    return [_placed_response(s) for s in students]
+
+
+@api_router.put("/placed-students/{student_id}", response_model=PlacedStudentResponse)
+async def update_placed_student(student_id: str, input: PlacedStudentUpdate, admin=Depends(get_current_admin)):
+    update_data = {k: v for k, v in input.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    result = await db.placed_students.update_one({"id": student_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Placed student not found")
+    s = await db.placed_students.find_one({"id": student_id}, {"_id": 0})
+    return _placed_response(s)
+
+
+@api_router.delete("/placed-students/{student_id}")
+async def delete_placed_student(student_id: str, admin=Depends(get_current_admin)):
+    result = await db.placed_students.delete_one({"id": student_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Placed student not found")
+    return {"message": "Placed student deleted successfully"}
 
 
 # ============ Sitemap Generation ============

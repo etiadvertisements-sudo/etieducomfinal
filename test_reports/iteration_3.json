@@ -1,0 +1,47 @@
+{
+  "summary": "Full backend + frontend regression of the new ETI Educom features. Backend: 34/34 pytest assertions pass (/app/backend/tests/test_eti_new_features.py) — all 13 lead endpoints accept valid payloads and each one was verified to forward to the live CRM webhook in backend logs (including Job Application source); Announcements/Placed Students/Partners(recruiter)/Events/Blogs CRUD + auth enforcement + 404s all pass; 20 programs present. Frontend: announcement bar, Our Recruiters, Placed Students (horizontal scroll incl. mobile), Recent Events (past-dated, 3 available) all render; admin panel login with TOTP 2FA works and Placed Students / Announcements add flows + Partners 'Recruiter' option all work; real lead form (free-counselling) submits end-to-end and shows thank-you page. TWO significant frontend defects found: (1) CRITICAL header/announcement-bar overlap making the whole top nav unclickable after any scroll, (2) HIGH all 8 recruiter logos are broken images (logo.clearbit.com does not resolve).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/placed-students", "issue": "Validation error message surfaced to the admin UI is the raw Pydantic string 'String should have at least 1 character' with no field name — admin cannot tell which field failed (happens when the required Student Photo is left empty; the modal has no client-side required check)."},
+      {"endpoint": "POST /api/applications", "issue": "job_id is accepted without verifying the job opening exists (a fabricated job_id 'test-job-1' was stored and forwarded to CRM). Consider validating job_id."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Header.jsx + AnnouncementBar.jsx", "issue": "CRITICAL: After scrolling, the sticky header slides underneath the announcement bar and the entire desktop/mobile top nav becomes unclickable. Verified: header.getBoundingClientRect().top becomes 0 while .announcement-bar occupies 0-40px with z-[60] vs header z-50; elementFromPoint on the 'Contact' nav link returns DIV.announcement-bar and a normal Playwright click times out (element intercepts pointer events). Header logo and nav are also visually clipped. RCA: Header.jsx line 118 sets className={`header-main ${scrolled ? 'scrolled' : ''}`}, which overwrites the 'with-announcement' class that AnnouncementBar.jsx adds imperatively via classList.add, so .header-main.with-announcement{top:2.5rem} is lost on the first scroll re-render. Fix by driving the announcement state through React (context/prop/store) or by CSS (e.g. body.has-announcement .header-main) instead of imperative classList on a React-controlled element. Same problem affects .main-content padding.", "selector": ".header-main / [data-testid=\"announcement-bar\"]", "priority": "CRITICAL"},
+      {"component": "RecruitersSection.jsx + seeded partner data", "issue": "HIGH: All 8 recruiter logos render as broken images on the homepage AND in the admin Partners tab. Seeded logo_url values all point to https://logo.clearbit.com/<domain> and that host does not resolve (DNS ERR_NAME_NOT_RESOLVED from the container; Clearbit's free Logo API has been retired). 16/16 <img> in [data-testid=\"recruiters-track\"] have naturalWidth === 0. Two fixes needed: (a) reseed recruiter logos with hosted/uploaded assets, (b) add an onError fallback in RecruitersSection.jsx so the company name text (already implemented for the no-logo case) is shown instead of a broken image icon.", "selector": "[data-testid=\"recruiters-track\"] img", "priority": "HIGH"},
+      {"component": "Admin PlacedStudentsTab", "issue": "Student Photo is marked required (*) but the form submits without it and only fails server-side with a 422; no client-side validation and no data-testid on the photo URL input / 'Save Placed Student' button (only name/company/position have testids).", "selector": "[data-testid=\"placed-student-name\"] modal", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Homepage - announcement bar (mobile 390px)", "issues": ["Announcement text is truncated to '🎓 Admissions Open for 2026 batc...' (scrollWidth 628 vs clientWidth 260); consider a marquee/smaller font/2-line layout on mobile so the offer is readable."]},
+      {"screen": "Homepage - Recent Events", "issues": ["Only 3 completed events exist so the 4-column grid leaves an obvious empty 4th column on desktop; seed a 4th completed event or use a centered/auto-fit grid."]},
+      {"screen": "Homepage (mobile)", "issues": ["WhatsApp 'Need help?' chat bubble overlaps section content/stats near the bottom-left together with the AI chat widget and the sticky bottom bar — crowded bottom-left corner."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_eti_new_features.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "CRITICAL: Fix header/announcement-bar overlap — stop mutating .header-main className imperatively from AnnouncementBar; keep 'with-announcement' when Header adds 'scrolled' (React state/context or body-level CSS class). Top nav is currently unclickable on every page after scrolling.",
+    "HIGH: Replace the logo.clearbit.com recruiter logo URLs (host is dead) and add an <img onError> name fallback in RecruitersSection.jsx (and admin Partners cards).",
+    "MEDIUM: Add client-side required validation + data-testids for the Student Photo input and Save button in the admin Placed Students modal; surface friendly field-level validation errors instead of raw Pydantic messages.",
+    "LOW: Seed a 4th completed event so the homepage 'Recent Events' 4-card grid is full; improve mobile announcement text truncation."
+  ],
+  "critical_code_review_comments": [
+    "Header.jsx:118 `className={`header-main ${scrolled ? 'scrolled' : ''}`}` fights AnnouncementBar.jsx's document.querySelector('.header-main').classList.add('with-announcement'). Never mix imperative classList mutation with React-controlled className on the same node — this is the root cause of the nav overlap.",
+    "server.py is 4950 lines — well over the 700-line guideline. Split into routers (leads, content, admin, seo, partners/placed-students).",
+    "RecruitersSection/PlacedStudentsSection swallow fetch errors with empty catch blocks and simply render null; there is no loading or error state, so a backend outage silently removes homepage sections.",
+    "POST /api/applications does not validate that job_id references an existing job opening before storing and forwarding the lead to the CRM."
+  ],
+  "updated_files": ["/app/backend/tests/test_eti_new_features.py"],
+  "success_rate": {"backend": "100% (34/34)", "frontend": "~85% (all new sections and admin flows functional; 1 critical nav overlap + broken recruiter logos)"},
+  "seed_data_creation": "Created and deleted TEST_QA/TEST_UI records (placed student, announcement, partner, event, blog) via API and admin UI — all cleaned up. 13 test leads (names prefixed 'TEST QA', phones 999000xxxx) plus 1 'TEST UI Counsel' lead were submitted and were forwarded to the REAL CRM webhook (bms.etieducom.com) — they remain in Mongo and in the CRM.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Admin /eti-manage-x9k2m password ETIadmin@2026; 2FA is now ENABLED with TOTP secret UYOMLUIVQ63WGOGJY7G2RA5YDCE5DYBS (also readable from mongo admin_users.totp_secret). Use pyotp.TOTP(secret).now() in tests.",
+  "context_for_next_testing_agent": "Run `cd /app/backend && python -m pytest tests/test_eti_new_features.py -n 0 -v` (serial recommended: /api/admin/login is rate limited to 5/min). The suite covers all 13 lead endpoints + CRM webhook log verification, announcements, placed students, partners(recruiter/certification/placement), events, blogs, programs. Do NOT use .invalid email TLDs — EmailStr rejects them. 2FA is enabled; secret is in the test_credentials field above. Playwright: pymongo is NOT available in the automation runtime, so read the TOTP secret out-of-band and inline it; pyotp IS available. Admin add-forms live behind an 'Add' button modal. Retest priorities after fixes: (1) header nav clickability after scroll on desktop+mobile with announcement bar active, (2) recruiter logos loading (naturalWidth>0).",
+  "rca_of_the_issue": "Header nav unclickable: AnnouncementBar.jsx adds the 'with-announcement' class to .header-main imperatively (classList.add) inside a useEffect. Header.jsx renders className={`header-main ${scrolled ? 'scrolled' : ''}`}; on the first scroll React re-renders and overwrites the class list, dropping 'with-announcement'. The header then returns to top:0 where the announcement bar (fixed, top:0, z-[60]) sits above the header (z-50), covering the logo and the whole nav row (measured header.top=0, bar.bottom=40, nav link rect top=18/bottom=54) so document.elementFromPoint on nav links returns the announcement bar and clicks are intercepted. Reproduce: open homepage, scroll ~1500px, try to click any header nav link. Mitigation: manage announcement visibility in React state shared with Header (context) or toggle a class on <body>/<html> and target `body.has-announcement .header-main` in globals.css."
+}

@@ -1,0 +1,31 @@
+{
+  "summary": "Frontend-only retest of iteration_3 fixes on the live preview host. FIX 1 (header/announcement overlap) VERIFIED on desktop 1920: announcement bar occupies 0-40px, .header-main top=40px, body gets 'has-announcement' class, .main-content padding-top=112px. document.elementFromPoint on every visible header control (logo, Home, About, Programs, Resources, Careers, Franchise, Contact, Free Counselling) resolves to the control itself both before and after scrolling 1500px; Playwright clicks on Contact, Franchise and the About>About Us dropdown item all navigated successfully after scroll. FIX 2 (recruiter logos) VERIFIED: 8 recruiters seeded, 16 looped cards, all 16 <img> from cdn.simpleicons.org loaded (naturalWidth=150), zero broken-image icons, onError fallback spans present but hidden as expected. Admin Partners tab shows 8 cards with all logos loading, no broken images. REGRESSIONS PASS: announcement bar renders and dismiss works on desktop and mobile (body class removed, header returns to top:0), Placed Students section = 4 cards, Recent Events = 4 cards, admin Placed Students modal blocks submit with toast 'Please add a student photo (upload or paste an image URL).' and count stays 4. One NEW medium issue found on mobile 390px: the announcement bar wraps to 3 lines (68px tall) but the header offset is hard-coded to 2.5rem/40px, producing a 28px overlap between the bar and the fixed header (visual only - nav links, hamburger, announcement link and dismiss all remain hit-testable and clickable).",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AnnouncementBar + header (mobile 390px)", "issue": "Announcement bar text wraps to 3 lines => bar height 68px, but 'body.has-announcement .header-main {top: 2.5rem}' (40px) is a fixed offset, so the bar's bottom 28px is overlapped by the fixed header (measured bar.bottom - header.top = 28px). Cosmetic only: hit tests on announcement-text/link/dismiss and all header controls still resolve correctly and clicks work. Suggest measuring the bar height at runtime (ResizeObserver -> CSS var) or shortening the announcement text / using a single-line ellipsis on small screens.", "selector": "[data-testid=\"announcement-bar\"], .header-main", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin > Placed Students > Add modal", "issues": ["Student Name, Company Name, Position and Order inputs have no visible <label> (only placeholders); after typing, the numeric 'Order' field shows a bare '0' with no context"]},
+      {"screen": "Homepage recruiters marquee (mobile 390px)", "issues": ["Left/right 96px white gradient masks cover most of the 390px viewport, so at any time only ~1 logo is fully visible and edge logos look half-faded; consider narrowing the fade to w-10 on small screens"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_eti_new_features.py"],
+  "action_items": [
+    "Optional (MEDIUM): make the has-announcement header offset dynamic so the 3-line mobile announcement bar (68px) does not sit under the header at 390px width",
+    "Optional (LOW): add labels to Add Placed Student modal inputs; reduce marquee gradient width on mobile"
+  ],
+  "critical_code_review_comments": [
+    "globals.css hard-codes the announcement offset (top-10 / pt-[112px]); this is correct only while the bar is exactly 40px tall. Any longer announcement text or smaller viewport re-introduces the overlap. Prefer a CSS variable set from AnnouncementBar via ResizeObserver.",
+    "app/eti-manage-x9k2m/page.js is ~3100 lines - should be split into per-tab modules (exceeds the 700-line guideline)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (frontend-only request)", "frontend": "100% of requested fixes verified; 1 new medium cosmetic issue"},
+  "seed_data_creation": "None. The Add Placed Student submit was intentionally blocked by validation, so no test record was persisted (count remained 4). No leads submitted.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "Admin /eti-manage-x9k2m password ETIadmin@2026 + TOTP secret UYOMLUIVQ63WGOGJY7G2RA5YDCE5DYBS (pyotp) - login worked first attempt",
+  "context_for_next_testing_agent": "Both iteration_3 defects are fixed and confirmed via elementFromPoint hit tests + real clicks after 1500px scroll (desktop) and via naturalWidth checks on recruiter logos (all 16 load from cdn.simpleicons.org, network reachable from the automation env). Remaining known item: 28px announcement-bar/header overlap at 390px width caused by the fixed 2.5rem offset - cosmetic, not click-blocking. Admin login is rate-limited 5/min; space out attempts.",
+  "rca_of_the_issue": "Iteration_3 overlap was caused by AnnouncementBar imperatively mutating .header-main styles; moving state to a body class ('has-announcement') plus CSS rules for .header-main/.main-content/.mobile-menu resolved it. Recruiter logos were broken because clearbit logo API is dead; reseeding with cdn.simpleicons.org plus an onError name fallback resolved it. The residual mobile overlap is because the CSS offset (40px) is a constant while the bar's actual height grows to 68px when the text wraps on narrow viewports."
+}

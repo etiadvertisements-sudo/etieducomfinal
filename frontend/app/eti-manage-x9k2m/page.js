@@ -1085,9 +1085,69 @@ function EventsTab() {
   );
 }
 
+// Placed Students Tab
+function PlacedStudentsTab() {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const emptyForm = { name: '', photo_url: '', company_name: '', position: '', company_logo_url: '', order: 0 };
+  const [formData, setFormData] = useState(emptyForm);
+
+  const load = async () => { const res = await fetch(`${API_URL}/api/placed-students?active_only=false`); if (res.ok) setRows(await res.json()); setLoading(false); };
+  useEffect(() => { load(); }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.photo_url) { toast.error('Please add a student photo (upload or paste an image URL).'); return; }
+    const payload = { ...formData, order: Number(formData.order) || 0 };
+    const res = await adminFetch(`${API_URL}/api/placed-students`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (res.ok) { toast.success('Placed student added'); setShowForm(false); setFormData(emptyForm); load(); }
+    else { const err = await res.json().catch(() => null); toast.error(Array.isArray(err?.detail) ? err.detail[0]?.msg : (err?.detail || 'Failed to add')); }
+  };
+
+  const handleDelete = async (id) => { if (confirm('Delete this placed student?')) { await adminFetch(`${API_URL}/api/placed-students/${id}`, { method: 'DELETE' }); load(); } };
+
+  if (loading) return <Spinner />;
+
+  return (
+    <div className="space-y-4" data-testid="placed-students-tab">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Placed Students ({rows.length})</h2>
+        <button onClick={() => setShowForm(true)} className="btn-primary text-sm" data-testid="placed-student-add-btn"><Plus className="w-4 h-4" /> Add</button>
+      </div>
+
+      <Modal isOpen={showForm} onClose={() => setShowForm(false)} title="Add Placed Student">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input type="text" placeholder="Student Name *" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="form-input" required data-testid="placed-student-name" />
+          <ImageUploadField value={formData.photo_url} onChange={(url) => setFormData({ ...formData, photo_url: url })} label="Student Photo *" />
+          <input type="text" placeholder="Company Name *" value={formData.company_name} onChange={(e) => setFormData({ ...formData, company_name: e.target.value })} className="form-input" required data-testid="placed-student-company" />
+          <input type="text" placeholder="Position / Role * (e.g., SOC Analyst)" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} className="form-input" required data-testid="placed-student-position" />
+          <ImageUploadField value={formData.company_logo_url} onChange={(url) => setFormData({ ...formData, company_logo_url: url })} label="Company Logo (optional)" />
+          <input type="number" placeholder="Display Order" value={formData.order} onChange={(e) => setFormData({ ...formData, order: e.target.value })} className="form-input" />
+          <button type="submit" className="btn-primary w-full justify-center" data-testid="placed-student-save"><Save className="w-4 h-4" /> Save Placed Student</button>
+        </form>
+      </Modal>
+
+      {rows.length === 0 ? <div className="text-center py-12 bg-gray-50 rounded-xl"><Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-3" /><p className="text-gray-500">No placed students yet</p></div> : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {rows.map((s) => (
+            <div key={s.id} className="bg-white rounded-xl border p-4 text-center group relative" data-testid={`placed-student-row-${s.id}`}>
+              <button onClick={() => handleDelete(s.id)} className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+              {s.photo_url && <img src={s.photo_url} alt={s.name} className="w-20 h-20 mx-auto rounded-full object-cover" />}
+              <p className="font-bold text-gray-900 mt-2 text-sm">{s.name}</p>
+              <p className="text-xs text-primary font-medium">{s.position}</p>
+              <p className="text-xs text-gray-500">{s.company_name}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 // Partners Tab
-function PartnersTab() {
-  const [partners, setPartners] = useState([]);
+function PartnersTab() {  const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', logo_url: '', partner_type: 'certification' });
@@ -1120,6 +1180,7 @@ function PartnersTab() {
           <select value={formData.partner_type} onChange={(e) => setFormData({ ...formData, partner_type: e.target.value })} className="form-input">
             <option value="certification">Certification</option>
             <option value="placement">Placement</option>
+            <option value="recruiter">Recruiter (Our Recruiters)</option>
           </select>
           <button type="submit" className="btn-primary w-full justify-center"><Save className="w-4 h-4" /> Save Partner</button>
         </form>
@@ -1130,7 +1191,7 @@ function PartnersTab() {
           {partners.map((p) => (
             <div key={p.id} className="bg-white rounded-xl border p-4 text-center group relative">
               <button onClick={() => handleDelete(p.id)} className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
-              {p.logo_url && <img src={p.logo_url} alt={p.name} className="h-12 mx-auto object-contain" />}
+              {p.logo_url && <img src={p.logo_url} alt={p.name} className="h-12 mx-auto object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
               <p className="text-xs text-gray-600 mt-2">{p.name}</p>
               <Badge variant="primary">{p.partner_type}</Badge>
             </div>
@@ -2841,6 +2902,7 @@ export default function SecureAdminPage() {
     { id: 'reviews', label: 'Reviews', icon: Star },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'partners', label: 'Partners', icon: Handshake },
+    { id: 'placed-students', label: 'Placed Students', icon: Briefcase },
     { id: 'universities', label: 'Universities', icon: Building2 },
     { id: 'programs', label: 'Programs', icon: Layers },
     { id: 'branches', label: 'Branches', icon: MapPin },
@@ -2870,6 +2932,7 @@ export default function SecureAdminPage() {
       case 'reviews': return <ReviewsTab />;
       case 'events': return <EventsTab />;
       case 'partners': return <PartnersTab />;
+      case 'placed-students': return <PlacedStudentsTab />;
       case 'universities': return <UniversitiesTab />;
       case 'programs': return <ProgramsTab />;
       case 'branches': return <BranchesTab />;

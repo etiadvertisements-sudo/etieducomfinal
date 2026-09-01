@@ -32,3 +32,15 @@
 ## Backlog / Optional
 - Import production MongoDB dump to restore blogs/reviews/authors/enquiries.
 - Plug in real integration keys (Cloudinary, Meta CAPI + Pixel ID, MSG91 WhatsApp, Google Indexing service account) when available.
+
+## Feature Session — 2026-09-01 (leads webhook + homepage sections + announcement bar)
+- CRM webhook: set `CRM_WEBHOOK_URL` env to the live bms.etieducom.com endpoint. Verified all 13 lead forms forward (payload {name,phone,email,source,campaign,program_name}); added missing forwarding to `/api/applications` (Job Application). Confirmed in backend logs (100% backend tests pass).
+- Announcement bar: new `AnnouncementBar.jsx` in site layout, admin-managed via existing Announcements tab. Header/content offset driven by `body.has-announcement` + `--announcement-h` CSS var (dynamic height, fixes mobile overlap).
+- Recent Events: `EventsSection.jsx` now shows up to 4 completed (past-dated) events with images.
+- Our Recruiters: new `RecruitersSection.jsx` (scrollable marquee); admin adds via Partners tab with new `recruiter` type. Backend Partner pattern extended to include `recruiter`. Logos seeded via cdn.simpleicons.org with onError name fallback.
+- Placed Students: NEW backend model + CRUD `/api/placed-students`; new `PlacedStudentsSection.jsx` (horizontal scroll: photo + position + company); new admin `PlacedStudentsTab`.
+- Verified via testing agent iterations 3 & 4: backend 34/34; frontend fixes (header nav clickable after scroll, recruiter logos load) confirmed.
+
+## Backlog (optional)
+- Split server.py / admin page.js into modules (large files).
+- Add field-level validation labels in admin modals; validate job_id references in /api/applications.

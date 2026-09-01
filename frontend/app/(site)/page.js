@@ -26,6 +26,8 @@ import EventsSection from '@/components/EventsSection';
 import BlogsSection from '@/components/BlogsSection';
 import AnimatedStatsSection from '@/components/AnimatedStatsSection';
 import PartnersSection from '@/components/PartnersSection';
+import RecruitersSection from '@/components/RecruitersSection';
+import PlacedStudentsSection from '@/components/PlacedStudentsSection';
 import AboutPreviewSection from '@/components/AboutPreviewSection';
 import WhatsAppButton from '@/components/WhatsAppButton';
 
@@ -315,6 +317,12 @@ export default function HomePage() {
 
       {/* Partners Section */}
       <PartnersSection />
+
+      {/* Our Recruiters Section */}
+      <RecruitersSection />
+
+      {/* Placed Students Section */}
+      <PlacedStudentsSection />
 
       {/* Events Section */}
       <EventsSection />
