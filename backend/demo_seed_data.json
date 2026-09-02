@@ -1,0 +1,212 @@
+{
+  "announcements": [
+    {
+      "id": "c7318d8e-82f5-4050-a3ff-b425817ac758",
+      "text": "\ud83c\udf93 Admissions Open for 2026 batches \u2014 Limited seats! Book your free counselling today.",
+      "link": "/free-counselling",
+      "link_text": "Enquire Now",
+      "is_active": true,
+      "order": 0,
+      "created_at": "2026-09-01T17:06:56.734710+00:00"
+    },
+    {
+      "id": "20ee3bec-8ebe-4cfe-a849-950ecc0b5b9a",
+      "text": "\ud83c\udfc6 ETI Educom students placed at top IT companies. Join the success story!",
+      "link": "/free-counselling",
+      "link_text": "Enquire Now",
+      "is_active": true,
+      "order": 1,
+      "created_at": "2026-09-01T17:06:56.762565+00:00"
+    }
+  ],
+  "partners": [
+    {
+      "id": "56cfcd7d-0b56-45ce-98fe-f335382e54ef",
+      "name": "Google",
+      "logo_url": "https://cdn.simpleicons.org/google",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 0,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.759753+00:00"
+    },
+    {
+      "id": "6364fa94-ed16-417e-8ae2-ec7139d5d5a2",
+      "name": "Accenture",
+      "logo_url": "https://cdn.simpleicons.org/accenture",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 1,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.762382+00:00"
+    },
+    {
+      "id": "b4f1cc7c-03a1-4767-a992-0c85811f8bbc",
+      "name": "Infosys",
+      "logo_url": "https://cdn.simpleicons.org/infosys",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 2,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.764632+00:00"
+    },
+    {
+      "id": "c6e38c13-0aad-44df-8cfc-8e088fc052c6",
+      "name": "Wipro",
+      "logo_url": "https://cdn.simpleicons.org/wipro",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 3,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.766725+00:00"
+    },
+    {
+      "id": "11aedb74-7bb7-44c2-a5b0-ea6c56a46cfe",
+      "name": "TCS",
+      "logo_url": "https://cdn.simpleicons.org/tcs",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 4,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.768866+00:00"
+    },
+    {
+      "id": "b98adc57-a392-4a88-b245-875385127b4d",
+      "name": "HCLTech",
+      "logo_url": "https://cdn.simpleicons.org/hcl",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 5,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.770992+00:00"
+    },
+    {
+      "id": "f69c20e8-f43c-4e40-b5f0-bb5123cb1bd4",
+      "name": "Cisco",
+      "logo_url": "https://cdn.simpleicons.org/cisco",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 6,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.773432+00:00"
+    },
+    {
+      "id": "709ec888-d5ac-4884-a38c-b75d56a295c1",
+      "name": "SAP",
+      "logo_url": "https://cdn.simpleicons.org/sap",
+      "website_url": null,
+      "partner_type": "recruiter",
+      "order": 7,
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.775837+00:00"
+    }
+  ],
+  "placed_students": [
+    {
+      "id": "0e917deb-4ec7-4d04-a99d-a5ede4fc0c18",
+      "name": "Simran Kaur",
+      "photo_url": "https://images.unsplash.com/photo-1764740128390-4196892b3f61?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      "company_name": "Wipro",
+      "position": "SOC Analyst",
+      "company_logo_url": null,
+      "order": 0,
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.810272+00:00"
+    },
+    {
+      "id": "4cea53b5-ad7e-40a3-a81e-d5f67e034e97",
+      "name": "Riya Sharma",
+      "photo_url": "https://images.unsplash.com/photo-1725033489648-a819750348eb?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      "company_name": "Infosys",
+      "position": "Frontend Developer",
+      "company_logo_url": null,
+      "order": 1,
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.836209+00:00"
+    },
+    {
+      "id": "a0270dc2-6a20-4178-841b-45f3e367846c",
+      "name": "Arjun Mehta",
+      "photo_url": "https://images.unsplash.com/photo-1577860756464-3e84ec40c04c?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      "company_name": "TCS",
+      "position": "Cybersecurity Engineer",
+      "company_logo_url": null,
+      "order": 2,
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.838661+00:00"
+    },
+    {
+      "id": "f933376c-cbbd-439c-a322-dc44d5b51487",
+      "name": "Karan Verma",
+      "photo_url": "https://images.unsplash.com/photo-1669946964044-f16f98ae4980?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      "company_name": "Accenture",
+      "position": "Python Developer",
+      "company_logo_url": null,
+      "order": 3,
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.841137+00:00"
+    }
+  ],
+  "events": [
+    {
+      "id": "acf219ab-97a6-4918-af9d-5f55222d800a",
+      "title": "Cybersecurity Awareness Seminar",
+      "description": "Hands-on session on modern cyber threats and defense.",
+      "event_date": "2025-12-10",
+      "event_time": "10:00 AM",
+      "location": "ETI Educom, Pathankot",
+      "image_url": "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      "gallery_images": [],
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.843319+00:00"
+    },
+    {
+      "id": "5d1a58ee-58d7-4416-a9d7-1974e895aa2a",
+      "title": "Career Guidance Workshop",
+      "description": "Expert counselling on IT career pathways for students.",
+      "event_date": "2025-11-22",
+      "event_time": "10:00 AM",
+      "location": "ETI Educom, Pathankot",
+      "image_url": "https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      "gallery_images": [],
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.868890+00:00"
+    },
+    {
+      "id": "e713855b-f423-4936-8a0a-bd69f5dba9cd",
+      "title": "Full Stack Bootcamp Demo Day",
+      "description": "Students showcased live projects to industry mentors.",
+      "event_date": "2025-10-15",
+      "event_time": "10:00 AM",
+      "location": "ETI Educom, Pathankot",
+      "image_url": "https://images.unsplash.com/photo-1561089489-f13d5e730d72?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      "gallery_images": [],
+      "is_active": true,
+      "created_at": "2026-09-01T17:06:56.871393+00:00"
+    },
+    {
+      "id": "ac2578f9-4152-4133-a47a-6ab0747e41f1",
+      "title": "Industry Expert Talk: Careers in AI",
+      "description": "Leaders from the AI industry shared insights and roadmaps with our students.",
+      "event_date": "2025-09-18",
+      "event_time": "11:00 AM",
+      "location": "ETI Educom, Pathankot",
+      "image_url": "https://images.unsplash.com/photo-1565689157206-0fddef7589a2?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      "gallery_images": [],
+      "is_active": true,
+      "created_at": "2026-09-01T17:23:03.780267+00:00"
+    },
+    {
+      "id": "643566a3-a1ed-4443-a22f-7faeeba98323",
+      "title": "AI & Machine Learning Career Workshop",
+      "description": "A hands-on workshop on building a career in AI/ML \u2014 tools, roadmaps and live Q&A with mentors.",
+      "event_date": "2026-10-01",
+      "event_time": "10:30 AM",
+      "location": "ETI Educom, Pathankot",
+      "image_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      "gallery_images": [],
+      "is_active": true,
+      "created_at": "2026-09-01T17:42:07.377832+00:00"
+    }
+  ]
+}
