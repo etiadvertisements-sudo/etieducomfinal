@@ -56,3 +56,10 @@
 - Added 2 programs: Power BI (1 Month, PL-300 aligned) and SAP ERP (3 Months, S/4HANA FICO/MM/SD) — entries in programsData ([programId]/page.js), cards on /programs (Tech Programs), and Header mega menu.
 - Analytics: existing GTM container = GTM-TRDQQ98M (app/layout.js). Added hardcoded Google gtag.js for G-FD31L36ZSK (Google Ads/GA4) in <head>.
 - Verified via testing agent iteration_6 (100%).
+
+## Deployment Fix — 2026-09-01 (production _next/static MIME/400/ChunkLoadError)
+- Root cause: production ran `next dev` because frontend/package.json "start" was "next dev -p 3000". Deploy serves compiled build via "start".
+- Fix: package.json "start" = "next start -p 3000" (added start:dev for dev). Ran `next build`; preview now serves the PRODUCTION build (hot reload OFF — future FE edits need `yarn build` + `supervisorctl restart frontend`).
+- Verified (testing agent iteration_7): /_next/static CSS=200 text/css, JS=200 application/javascript; no MIME/400/ChunkLoadError/React #423 errors; all routes render.
+- Also fixed Header mega-menu broken slug 'ms-office-ai' -> 'ms-office' (was the only 404/console error). /programs/ms-office = 200.
+- ACTION for user: re-deploy so production picks up the corrected start script + build.

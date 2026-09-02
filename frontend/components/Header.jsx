@@ -81,7 +81,7 @@ const programCategories = [
     id: 'office_accounting',
     title: 'Office & Accounting',
     programs: [
-      { id: 'ms-office-ai', title: 'MS-Office with AI', icon: Award, duration: '2 Months' },
+      { id: 'ms-office', title: 'MS-Office with AI', icon: Award, duration: '2 Months' },
       { id: 'e-accounting', title: 'E-Accounting', icon: Calculator, duration: '3 Months' }
     ]
   },
