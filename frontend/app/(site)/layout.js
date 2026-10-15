@@ -4,6 +4,7 @@ import MobileStickyBar from '@/components/MobileStickyBar';
 import AIChatWidget from '@/components/AIChatWidget';
 import NotificationBar from '@/components/NotificationBar';
 import { Toaster } from 'sonner';
+import CookieConsent from '@/components/CookieConsent';
 
 export default function SiteLayout({ children }) {
   return (
@@ -17,6 +18,7 @@ export default function SiteLayout({ children }) {
       <Footer />
       <MobileStickyBar />
       <AIChatWidget />
+      <CookieConsent />
     </>
   );
 }

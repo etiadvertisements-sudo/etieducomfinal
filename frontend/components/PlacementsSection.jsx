@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Briefcase, ChevronRight } from 'lucide-react';
 import { PlacementCard } from '@/components/PlacementsPageClient';
+import Marquee from '@/components/Marquee';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -13,10 +14,10 @@ export default function PlacementsSection() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await fetch(`${API_URL}/api/placements?latest=true&limit=4`);
+        const r = await fetch(`${API_URL}/api/placements?latest=true&limit=12`);
         if (r.ok) {
           const data = await r.json();
-          setItems(data.slice(0, 4));
+          setItems(data.slice(0, 12));
         }
       } catch {}
     })();
@@ -44,11 +45,13 @@ export default function PlacementsSection() {
           </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {items.map((s) => (
-            <PlacementCard key={s.id} s={s} />
-          ))}
-        </div>
+        <Marquee
+          items={items}
+          minItems={8}
+          duration={Math.max(30, items.length * 8)}
+          testid="placements-marquee"
+          renderItem={(s) => <div className="w-72 h-full py-2 [&>div]:h-full"><PlacementCard s={s} /></div>}
+        />
       </div>
     </section>
   );

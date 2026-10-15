@@ -88,7 +88,48 @@ export const captureUtmParams = () => {
       utm._captured_at = new Date().toISOString();
       localStorage.setItem('eti_utm', JSON.stringify(utm));
     }
+    saveAttributionCookie(utm);
   } catch { /* ignore */ }
+};
+
+const REFERRER_SOURCES = [
+  ['google.', 'google', 'organic'], ['bing.', 'bing', 'organic'], ['yahoo.', 'yahoo', 'organic'],
+  ['duckduckgo.', 'duckduckgo', 'organic'], ['facebook.', 'facebook', 'social'], ['fb.', 'facebook', 'social'],
+  ['instagram.', 'instagram', 'social'], ['linkedin.', 'linkedin', 'social'], ['youtube.', 'youtube', 'social'],
+  ['t.co', 'twitter', 'social'], ['twitter.', 'twitter', 'social'], ['x.com', 'twitter', 'social'],
+  ['whatsapp.', 'whatsapp', 'social'],
+];
+
+const deriveAttribution = (utm) => {
+  if (utm.utm_source || utm.utm_campaign) {
+    return { source: utm.utm_source || 'unknown', medium: utm.utm_medium || '', campaign: utm.utm_campaign || '', term: utm.utm_term || '', content: utm.utm_content || '' };
+  }
+  if (utm.gclid) return { source: 'google', medium: 'cpc' };
+  if (utm.fbclid) return { source: 'facebook', medium: 'paid_social' };
+  if (utm.msclkid) return { source: 'bing', medium: 'cpc' };
+  const ref = document.referrer;
+  if (ref) {
+    const host = new URL(ref).hostname.replace(/^www\./, '');
+    if (host && host !== window.location.hostname.replace(/^www\./, '')) {
+      const match = REFERRER_SOURCES.find(([k]) => host.includes(k));
+      return match ? { source: match[1], medium: match[2] } : { source: host, medium: 'referral' };
+    }
+  }
+  return null;
+};
+
+/** First-party cookie read by the backend to tag every lead with its source/campaign */
+const saveAttributionCookie = (utm) => {
+  const existing = document.cookie.split('; ').find((c) => c.startsWith('eti_attr='));
+  let attr = deriveAttribution(utm);
+  if (!attr) {
+    if (existing) return;
+    attr = { source: 'direct', medium: 'none' };
+  }
+  ['gclid', 'fbclid', 'msclkid'].forEach((k) => { if (utm[k]) attr[k] = utm[k]; });
+  if (document.referrer) attr.referrer = document.referrer.slice(0, 200);
+  attr.landing_page = window.location.pathname;
+  document.cookie = `eti_attr=${encodeURIComponent(JSON.stringify(attr))}; path=/; max-age=${30 * 86400}; SameSite=Lax`;
 };
 
 /** Get stored UTM (auto-expires after 30d) */
