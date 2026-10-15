@@ -296,15 +296,21 @@ function AllLeadsTab() {
   const fetchAllLeads = async () => {
     setLoading(true);
     try {
-      const [counselling, summer, industrial, contact, service, quickEnquiry, attributions] = await Promise.all([
+      const [counselling, summer, industrial, contact, service, quickEnquiry, attributions, franchise, cyber, hire, educonnect, referrals] = await Promise.all([
         adminFetch(`${API_URL}/api/counselling-leads`).then(r => r.json()).catch(() => []),
         adminFetch(`${API_URL}/api/summer-training-leads`).then(r => r.json()).catch(() => []),
         adminFetch(`${API_URL}/api/industrial-training-leads`).then(r => r.json()).catch(() => []),
         adminFetch(`${API_URL}/api/contact`).then(r => r.json()).catch(() => []),
         adminFetch(`${API_URL}/api/service-enquiry`).then(r => r.json()).catch(() => []),
         adminFetch(`${API_URL}/api/quick-enquiry`).then(r => r.json()).catch(() => []),
-        adminFetch(`${API_URL}/api/admin/lead-attributions`).then(r => r.json()).catch(() => [])
+        adminFetch(`${API_URL}/api/admin/lead-attributions`).then(r => r.json()).catch(() => []),
+        adminFetch(`${API_URL}/api/franchise-enquiry`).then(r => r.json()).catch(() => []),
+        adminFetch(`${API_URL}/api/cyber-warriors/registrations`).then(r => r.json()).catch(() => []),
+        adminFetch(`${API_URL}/api/hire-requests`).then(r => r.json()).catch(() => []),
+        adminFetch(`${API_URL}/api/educonnect/enquiries`).then(r => r.json()).catch(() => []),
+        adminFetch(`${API_URL}/api/referrals`).then(r => r.json()).catch(() => [])
       ]);
+      const arr = (x) => (Array.isArray(x) ? x : []);
       const attrMap = Object.fromEntries((Array.isArray(attributions) ? attributions : []).map(a => [a.lead_id, a]));
       
       const allLeads = [
@@ -313,7 +319,12 @@ function AllLeadsTab() {
         ...(Array.isArray(industrial) ? industrial : []).map(l => ({ ...l, source: 'Industrial Training', sourceColor: 'primary', deleteEndpoint: 'industrial-training-leads' })),
         ...(Array.isArray(contact) ? contact : []).map(l => ({ ...l, source: 'Contact Form', sourceColor: 'default', deleteEndpoint: 'contact' })),
         ...(Array.isArray(service) ? service : []).map(l => ({ ...l, name: l.contact_person || l.name, source: 'Service Enquiry', sourceColor: 'warning', deleteEndpoint: 'service-enquiry' })),
-        ...(Array.isArray(quickEnquiry) ? quickEnquiry : []).map(l => ({ ...l, source: 'Quick Enquiry', sourceColor: 'info', deleteEndpoint: 'quick-enquiry' }))
+        ...(Array.isArray(quickEnquiry) ? quickEnquiry : []).map(l => ({ ...l, program_interest: l.interest, source: 'Quick Enquiry', sourceColor: 'info', deleteEndpoint: 'quick-enquiry' })),
+        ...arr(franchise).map(l => ({ ...l, program_interest: `Franchise - ${l.city || ''}`, source: 'Franchise Enquiry', sourceColor: 'warning', deleteEndpoint: 'franchise-enquiry' })),
+        ...arr(cyber).map(l => ({ ...l, phone: l.contact_number, program_interest: l.registration_type, source: 'Cyber Warriors', sourceColor: 'primary', deleteEndpoint: 'cyber-warriors/registrations' })),
+        ...arr(hire).map(l => ({ ...l, name: l.contact_person, program_interest: l.company_name, source: 'Hire From Us', sourceColor: 'default' })),
+        ...arr(educonnect).map(l => ({ ...l, source: 'ETI EduConnect', sourceColor: 'success', deleteEndpoint: 'educonnect/enquiries' })),
+        ...arr(referrals).map(l => ({ ...l, name: l.friend_name, phone: l.friend_phone, program_interest: l.program_interest || `Referred by ${l.referrer_name}`, source: 'Referral', sourceColor: 'info', deleteEndpoint: 'referrals' }))
       ].map(l => ({ ...l, attr: attrMap[l.id] }))
         .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
       
@@ -352,7 +363,7 @@ function AllLeadsTab() {
 
   const exportCSV = () => {
     const headers = ['Name', 'Phone', 'Email', 'Interest', 'Form', 'Lead Source', 'Medium', 'Campaign', 'Date'];
-    const rows = filteredLeads.map(l => [l.name || '', l.phone || '', l.email || '', l.preferred_track || l.program_interest || '', l.source, leadSourceOf(l), l.attr?.medium || '', l.attr?.campaign || '', l.created_at ? new Date(l.created_at).toLocaleDateString() : ''].map(v => `"${String(v).replace(/"/g, '""')}"`));
+    const rows = filteredLeads.map(l => [l.name || '', l.phone || '', l.email || '', l.preferred_track || l.program_interest || l.training_topic || '', l.source, leadSourceOf(l), l.attr?.medium || '', l.attr?.campaign || '', l.created_at ? new Date(l.created_at).toLocaleDateString() : ''].map(v => `"${String(v).replace(/"/g, '""')}"`));
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
@@ -370,11 +381,11 @@ function AllLeadsTab() {
             <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-40" />
           </div>
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="form-input w-auto text-sm" data-testid="leads-form-filter">
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="form-input !w-auto text-sm" data-testid="leads-form-filter">
             <option value="all">All Forms</option>
             {formOptions.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
-          <select value={leadSourceFilter} onChange={(e) => setLeadSourceFilter(e.target.value)} className="form-input w-auto text-sm" data-testid="leads-source-filter">
+          <select value={leadSourceFilter} onChange={(e) => setLeadSourceFilter(e.target.value)} className="form-input !w-auto text-sm" data-testid="leads-source-filter">
             <option value="all">All Lead Sources</option>
             {leadSourceOptions.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
@@ -408,7 +419,7 @@ function AllLeadsTab() {
                       <div className="text-gray-900">{lead.phone || 'N/A'}</div>
                       {lead.email && <div className="text-sm text-gray-500">{lead.email}</div>}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{lead.preferred_track || lead.program_interest || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{lead.preferred_track || lead.program_interest || lead.training_topic || '-'}</td>
                     <td className="px-4 py-3"><Badge variant={lead.sourceColor}>{lead.source}</Badge></td>
                     <td className="px-4 py-3 text-sm" data-testid="lead-source-cell">
                       <div className="font-medium text-gray-900">{leadSourceOf(lead)}</div>
@@ -417,13 +428,13 @@ function AllLeadsTab() {
                     <td className="px-4 py-3 text-sm text-gray-600" data-testid="lead-campaign-cell">{lead.attr?.campaign || '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-500">{lead.created_at ? new Date(lead.created_at).toLocaleDateString() : '-'}</td>
                     <td className="px-4 py-3">
-                      <button 
+                      {lead.deleteEndpoint && <button 
                         onClick={() => handleDeleteLead(lead)}
                         className="text-red-600 hover:text-red-800 p-1"
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </button>}
                     </td>
                   </tr>
                 ))}

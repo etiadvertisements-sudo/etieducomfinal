@@ -1,0 +1,44 @@
+{
+  "summary": "Tested cookie consent + GTM gating, lead source attribution (backend + admin All Leads UI + CSV), and the partner/placement marquees. Backend: new /app/backend/tests/test_lead_attribution.py has 7 tests and all 7 pass. They cover: utm cookie recorded as google/cpc/test_camp with form='Quick Enquiry'; no cookie gives direct/none; a malformed cookie falls back to direct; 401 without a token; placement partner create/list; 422 for an invalid partner_type. The regression suite test_lead_forms.py also passes (12/12), and the backend logs show 'CRM webhook sent' for every submitted lead with no CRM failures. Frontend (Playwright on the preview URL): the cookie banner shows on first visit. Accept and the X button both set eti_cookie_consent='accepted' and the banner stays hidden after reload. Opt out sets 'rejected' and reloads the page; after that there is no banner, no gtm.js request, no gtm.js script tag and google_tag_manager is undefined. With no consent stored, GTM loads. Visiting /?utm_source=google&utm_medium=cpc&utm_campaign=test_camp sets the eti_attr cookie, and the cookie survives internal navigation. Submitting the homepage Quick Enquiry form through the UI stored an attribution of google/cpc/test_camp. Admin All Leads (opened with an injected JWT and session; 2FA was not touched) shows the Lead Source cell (source plus medium) and the Campaign cell. The leads-source-filter (google gives 1 row) and leads-form-filter both work, and the CSV export header includes Form, Lead Source, Medium and Campaign. Certification marquee: 9 unique colour logos (filter: none), none broken, a single row, marquee-scroll 35s infinite; the transform changes over time, and on hover animation-play-state is paused and the transform freezes. The placements-marquee scrolls and pauses on hover. After POST /api/partners with partner_type=placement, placement-partners-marquee appears with colour logos and pauses on hover; it is hidden when no placement partners exist. All test data was cleaned up.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "DELETE lead endpoints (/api/quick-enquiry/{id}, /api/counselling-leads/{id}, etc.)", "issue": "Deleting a lead does not delete its lead_attributions document, so orphan attribution records build up. test_lead_forms.py already left about 10 orphans."},
+      {"endpoint": "GET /api/admin/lead-attributions", "issue": "Returns the whole collection (up to 5000) with no filter by lead_id or date. This is fine now but will not scale."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AllLeadsTab Interest column + CSV", "issue": "Quick Enquiry leads show '-' for Interest. The column reads preferred_track/program_interest only, but quick enquiries store the value in `interest` (and service enquiries likely use training_topic).", "selector": "tbody td:nth-child(3)", "priority": "LOW"},
+      {"component": "GTM loader (app/layout.js)", "issue": "gtm.js?id=GTM-NW9SKWNV is requested twice per page load in the preview. This is most likely React strictMode in `next dev`, which re-runs the next/script inline script. Check on a production build (next start) that it loads only once; otherwise pageviews may be counted twice.", "selector": "#gtm-loader", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [
+      {"flow": "Lead source report coverage", "issue": "Attributions are recorded for Franchise, Cyber Warriors, Referral, Hire From Us and EduConnect leads, but All Leads only merges 6 forms (counselling, summer, industrial, contact, service, quick enquiry). Leads from those 5 forms do not appear in the report or CSV.", "affected_selectors": ["leads-form-filter"]}
+    ],
+    "design_issues": [
+      {"screen": "Admin All Leads header", "issues": ["The leads-form-filter and leads-source-filter selects render full-width and stacked; .form-input width overrides w-auto. The header toolbar looks awkward next to a small search box."]},
+      {"screen": "Mobile homepage cookie banner", "issues": ["The banner (z-60) covers the WhatsApp floating button and the 'Need help?' bubble until the visitor dismisses it. This is acceptable but worth checking."]},
+      {"screen": "Placement partners marquee", "issues": ["With only 1 placement partner, the same logo repeats 10 times per half (minItems=10), which looks odd. Consider a lower minItems or a static display for fewer than 4 partners."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_lead_attribution.py", "/app/test_reports/pytest/pytest_lead_attribution.xml"],
+  "action_items": [
+    "Delete lead_attributions when a lead is deleted (or use a cascade cleanup)",
+    "Show l.interest (quick enquiry) and the service topic in the All Leads Interest column and CSV",
+    "Add the missing forms (franchise, cyber warriors, referrals, hire, educonnect) to AllLeadsTab so the lead source report is complete",
+    "Check the GTM double load on a production build",
+    "Fix the filter select widths in the All Leads toolbar"
+  ],
+  "critical_code_review_comments": [
+    "PartnersSection: if an admin adds even one certification partner, the 9 default logos are fully replaced by it. This is intended, but it should be documented in the admin UI.",
+    "The attribution cookie is last-touch: any new UTM, click ID or external referrer overwrites it. Make sure this matches the business expectation.",
+    "eti-manage-x9k2m/page.js is more than 3100 lines and should be split into per-tab modules.",
+    "The homepage HeroForm inputs/select/submit have no data-testid."
+  ],
+  "updated_files": ["/app/backend/tests/test_lead_attribution.py"],
+  "success_rate": {"backend": "100%", "frontend": "100% of requested features (minor issues listed)"},
+  "seed_data_creation": "No seed data was created. The test quick enquiries, their attributions and the TEST_PlacementCo partner were deleted afterwards.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run with `pytest /app/backend/tests/test_lead_attribution.py -n0` (pytest.ini enables xdist by default). For the admin UI, mint a JWT and set sessionStorage admin_token, admin_session='true', admin_last_activity=Date.now() and admin_device=DEV_+hash, computed with the generateDeviceId algorithm in page context. Set localStorage eti_cookie_consent='accepted' so the banner stays out of the way. Use wait_until='domcontentloaded'."
+}

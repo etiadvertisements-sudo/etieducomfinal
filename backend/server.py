@@ -1353,6 +1353,7 @@ async def get_contact_enquiries(admin: dict = Depends(get_current_admin)):
 @api_router.delete("/contact/{contact_id}")
 async def delete_contact_enquiry(contact_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.contact_enquiries.delete_one({"id": contact_id})
+    await db.lead_attributions.delete_one({"lead_id": contact_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Contact enquiry not found")
     return {"message": "Contact enquiry deleted successfully"}
@@ -2714,6 +2715,7 @@ async def get_franchise_enquiries(admin: dict = Depends(get_current_admin)):
 @api_router.delete("/franchise-enquiry/{enquiry_id}")
 async def delete_franchise_enquiry(enquiry_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.franchise_enquiries.delete_one({"id": enquiry_id})
+    await db.lead_attributions.delete_one({"lead_id": enquiry_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     return {"message": "Franchise enquiry deleted successfully"}
@@ -2764,6 +2766,7 @@ async def get_counselling_leads(admin: dict = Depends(get_current_admin)):
 @api_router.delete("/counselling-leads/{lead_id}")
 async def delete_counselling_lead(lead_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.counselling_leads.delete_one({"id": lead_id})
+    await db.lead_attributions.delete_one({"lead_id": lead_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"message": "Lead deleted successfully"}
@@ -3287,6 +3290,7 @@ async def get_cyber_warriors_registrations(admin: dict = Depends(get_current_adm
 @api_router.delete("/cyber-warriors/registrations/{reg_id}")
 async def delete_cyber_warriors_registration(reg_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.cyber_warriors_registrations.delete_one({"id": reg_id})
+    await db.lead_attributions.delete_one({"lead_id": reg_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Registration not found")
     return {"message": "Registration deleted successfully"}
@@ -3728,6 +3732,7 @@ async def get_summer_training_leads(admin: dict = Depends(get_current_admin)):
 @api_router.delete("/summer-training-leads/{lead_id}")
 async def delete_summer_training_lead(lead_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.summer_training_leads.delete_one({"id": lead_id})
+    await db.lead_attributions.delete_one({"lead_id": lead_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"message": "Lead deleted successfully"}
@@ -3780,6 +3785,7 @@ async def get_industrial_training_leads(admin: dict = Depends(get_current_admin)
 @api_router.delete("/industrial-training-leads/{lead_id}")
 async def delete_industrial_training_lead(lead_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.industrial_training_leads.delete_one({"id": lead_id})
+    await db.lead_attributions.delete_one({"lead_id": lead_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"message": "Lead deleted successfully"}
@@ -3837,6 +3843,7 @@ async def get_lead_attributions(admin: dict = Depends(get_current_admin)):
 @api_router.delete("/quick-enquiry/{enquiry_id}")
 async def delete_quick_enquiry(enquiry_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.quick_enquiries.delete_one({"id": enquiry_id})
+    await db.lead_attributions.delete_one({"lead_id": enquiry_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     return {"message": "Enquiry deleted successfully"}
@@ -3893,6 +3900,7 @@ async def update_referral(referral_id: str, status: str, reward_amount: Optional
 @api_router.delete("/referrals/{referral_id}")
 async def delete_referral(referral_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.referrals.delete_one({"id": referral_id})
+    await db.lead_attributions.delete_one({"lead_id": referral_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Referral not found")
     return {"message": "Referral deleted successfully"}
@@ -3942,6 +3950,7 @@ async def update_service_enquiry(enquiry_id: str, status: str, admin: dict = Dep
 @api_router.delete("/service-enquiry/{enquiry_id}")
 async def delete_service_enquiry(enquiry_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.service_enquiries.delete_one({"id": enquiry_id})
+    await db.lead_attributions.delete_one({"lead_id": enquiry_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     return {"message": "Enquiry deleted successfully"}
@@ -4044,6 +4053,7 @@ async def get_educonnect_enquiries(admin: dict = Depends(get_current_admin)):
 @api_router.delete("/educonnect/enquiries/{enquiry_id}")
 async def delete_educonnect_enquiry(enquiry_id: str, admin: dict = Depends(get_current_admin)):
     result = await db.educonnect_enquiries.delete_one({"id": enquiry_id})
+    await db.lead_attributions.delete_one({"lead_id": enquiry_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     return {"message": "Enquiry deleted successfully"}

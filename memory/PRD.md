@@ -26,3 +26,12 @@
 
 ## Backlog / Optional
 - Plug in real integration keys (Cloudinary uploads, Meta CAPI token + Pixel ID, MSG91 WhatsApp, Google Indexing service account) when available.
+
+
+## Update — Jun 2026 (Cookie consent, Lead source, Marquees)
+- Cookie consent banner (`components/CookieConsent.jsx`, site layout): accepted by default, GTM loads immediately; "Opt out" stores `eti_cookie_consent=rejected` and GTM no longer loads (guard in `app/layout.js`).
+- Lead attribution: frontend sets first-party `eti_attr` cookie (UTM / gclid / fbclid / referrer / direct) in `lib/analytics.js`; backend middleware reads it, `queue_crm_lead` stores it in `lead_attributions` (keyed by lead_id) and sends campaign to the CRM. Admin `GET /api/admin/lead-attributions`. When a lead is deleted, its attribution record is deleted too.
+- Admin All Leads now covers 11 forms and has Form / Lead Source (+medium) / Campaign columns, Form and Lead Source filters, and a quoted CSV export.
+- Marquee (`components/Marquee.jsx`, `.marquee` CSS): certification partner logos in color (local defaults in `/public/images/partners`), placement partners from admin (`partner_type=placement`), and homepage placed-student cards (up to 12). Pauses on hover; shows a static row when there are fewer than 4 items.
+- The user decided to skip backend Meta CAPI (GTM handles CAPI).
+- Tested: iteration_6 (backend 100%, frontend 100%).
