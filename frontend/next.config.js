@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  distDir: process.env.NEXT_DIST_DIR || '.next',
 
   // Real image optimization (AVIF/WebP, responsive sizes)
   // Was previously `unoptimized: true` — disabled all optimization, hurt LCP.
