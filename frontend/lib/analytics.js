@@ -2,7 +2,7 @@
 // ETI Educom — Unified Analytics & Conversion Tracking
 // ============================================================
 // All events are pushed to window.dataLayer for Google Tag Manager.
-// GTM Container: GTM-TRDQQ98M (handles GA4, Meta Pixel, Google Ads, etc.)
+// GTM is enabled by setting NEXT_PUBLIC_GTM_ID (see app/layout.js).
 // 
 // In GTM Dashboard, create triggers on these custom events:
 //   - lead_form_submit  (all forms — generic)
