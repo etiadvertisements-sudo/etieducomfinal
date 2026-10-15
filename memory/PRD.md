@@ -35,3 +35,6 @@
 - Marquee (`components/Marquee.jsx`, `.marquee` CSS): certification partner logos in color (local defaults in `/public/images/partners`), placement partners from admin (`partner_type=placement`), and homepage placed-student cards (up to 12). Pauses on hover; shows a static row when there are fewer than 4 items.
 - The user decided to skip backend Meta CAPI (GTM handles CAPI).
 - Tested: iteration_6 (backend 100%, frontend 100%).
+
+## Fix — Jun 2026: GTM missing on live site
+- Live www.etieducom.com (self-hosted nginx/Next.js) had no GTM code: `.env` is gitignored, so `NEXT_PUBLIC_GTM_ID` was missing at build time. `app/layout.js` now falls back to `GTM-NW9SKWNV`. The user must push the code, then rebuild and restart on their server.

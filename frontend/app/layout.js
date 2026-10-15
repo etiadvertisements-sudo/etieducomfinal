@@ -6,8 +6,8 @@ import AnalyticsBootstrap from '@/components/AnalyticsBootstrap';
 const inter = Inter({ subsets: ['latin'] });
 
 // Google Tag Manager Container ID — set NEXT_PUBLIC_GTM_ID in .env to enable
-// (manages GA4, Meta Pixel, Google Ads, etc.). Leave unset to disable all tracking.
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || '';
+// (manages GA4, Meta Pixel, Google Ads, etc.). Falls back to the production container.
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-NW9SKWNV';
 
 export const metadata = {
   metadataBase: new URL('https://www.etieducom.com'),
