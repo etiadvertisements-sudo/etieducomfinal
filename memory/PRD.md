@@ -38,3 +38,4 @@
 
 ## Fix — Jun 2026: GTM missing on live site
 - Live www.etieducom.com (self-hosted nginx/Next.js) had no GTM code: `.env` is gitignored, so `NEXT_PUBLIC_GTM_ID` was missing at build time. `app/layout.js` now falls back to `GTM-NW9SKWNV`. The user must push the code, then rebuild and restart on their server.
+- Follow-up: GTM is now the official snippet as a plain inline `<script id="gtm-head">` at the top of `<head>` (no next/script), with the official noscript iframe right after `<body>`. Verified in preview: gtm.js loads once and GA4 fires. Live site still needs a pull, rebuild and restart.

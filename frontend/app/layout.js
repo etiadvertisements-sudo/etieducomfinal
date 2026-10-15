@@ -1,6 +1,5 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import Script from 'next/script';
 import AnalyticsBootstrap from '@/components/AnalyticsBootstrap';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -150,6 +149,19 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en-IN">
       <head>
+        {/* Google Tag Manager */}
+        <script
+          id="gtm-head"
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('eti_cookie_consent')==='rejected')throw 0;
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');}catch(e){}`,
+          }}
+        />
+        {/* End Google Tag Manager */}
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.webmanifest" />
@@ -163,37 +175,18 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
 
-        {/* Google Tag Manager — only rendered when NEXT_PUBLIC_GTM_ID is set */}
-        {GTM_ID ? (
-          <Script
-            id="gtm-loader"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                if (!window.__etiGtmLoaded && localStorage.getItem('eti_cookie_consent') !== 'rejected' && (window.__etiGtmLoaded = true))
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${GTM_ID}');
-              `,
-            }}
-          />
-        ) : null}
       </head>
       <body className={inter.className}>
-        {/* GTM noscript fallback — only when GTM is enabled */}
-        {GTM_ID ? (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-              height="0"
-              width="0"
-              style={{ display: 'none', visibility: 'hidden' }}
-              title="Google Tag Manager"
-            />
-          </noscript>
-        ) : null}
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
 
         <AnalyticsBootstrap />
 
