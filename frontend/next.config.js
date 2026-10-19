@@ -44,9 +44,9 @@ const nextConfig = {
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.gstatic.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://connect.facebook.net https://static.cloudflareinsights.com",
-      "connect-src 'self' https://api.msg91.com https://*.googletagmanager.com https://*.google-analytics.com https://www.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://stats.g.doubleclick.net https://cloudflareinsights.com https://api.indexnow.org https://indexing.googleapis.com https://bms.etieducom.com https://www.facebook.com",
-      "frame-src 'self' https://www.googletagmanager.com https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://maps.google.com https://*.facebook.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.gstatic.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://connect.facebook.net https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com",
+      "connect-src 'self' https://api.msg91.com https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://*.doubleclick.net https://pagead2.googlesyndication.com https://www.google.com https://google.com https://www.google.co.in https://*.google.com https://*.facebook.com https://connect.facebook.net https://cloudflareinsights.com https://api.indexnow.org https://indexing.googleapis.com https://bms.etieducom.com",
+      "frame-src 'self' https://www.googletagmanager.com https://td.doubleclick.net https://*.doubleclick.net https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://maps.google.com https://*.facebook.com",
       'upgrade-insecure-requests',
     ].join('; ');
 
