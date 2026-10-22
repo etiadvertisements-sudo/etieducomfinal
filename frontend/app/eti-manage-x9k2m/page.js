@@ -2751,6 +2751,9 @@ export default function SecureAdminPage() {
     const lockout = localStorage.getItem('admin_lockout');
     if (lockout && Date.now() < parseInt(lockout)) {
       setLockoutUntil(parseInt(lockout));
+    } else if (lockout) {
+      localStorage.removeItem('admin_lockout');
+      localStorage.setItem('admin_attempts', '0');
     }
 
     // Load attempts
@@ -2800,6 +2803,14 @@ export default function SecureAdminPage() {
       toast.error(`Too many attempts. Try again in ${mins} minutes.`);
       return;
     }
+    let attemptsSoFar = loginAttempts;
+    if (lockoutUntil) {
+      attemptsSoFar = 0;
+      setLockoutUntil(null);
+      setLoginAttempts(0);
+      localStorage.removeItem('admin_lockout');
+      localStorage.setItem('admin_attempts', '0');
+    }
 
     setSubmitting(true);
     try {
@@ -2808,10 +2819,14 @@ export default function SecureAdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
       });
+      if (res.status === 429) {
+        toast.error('Too many login requests. Please wait 1 minute and try again.');
+        return;
+      }
       const data = await res.json();
 
       if (res.status === 401) {
-        const newAttempts = loginAttempts + 1;
+        const newAttempts = attemptsSoFar + 1;
         setLoginAttempts(newAttempts);
         localStorage.setItem('admin_attempts', newAttempts.toString());
         logLoginAttempt(false);
