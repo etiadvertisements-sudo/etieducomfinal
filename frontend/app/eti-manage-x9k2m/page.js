@@ -2761,6 +2761,23 @@ export default function SecureAdminPage() {
     setLoginAttempts(attempts);
   }, []);
 
+  // Re-render the lock panel each 15s and unlock automatically when the lockout expires
+  const [, setLockTick] = useState(0);
+  useEffect(() => {
+    if (!lockoutUntil) return;
+    const t = setInterval(() => {
+      if (Date.now() >= lockoutUntil) {
+        setLockoutUntil(null);
+        setLoginAttempts(0);
+        localStorage.removeItem('admin_lockout');
+        localStorage.setItem('admin_attempts', '0');
+      } else {
+        setLockTick((n) => n + 1);
+      }
+    }, 15000);
+    return () => clearInterval(t);
+  }, [lockoutUntil]);
+
   // Session timeout checker
   useEffect(() => {
     if (authState !== 'authenticated') return;

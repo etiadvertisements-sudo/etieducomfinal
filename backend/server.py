@@ -127,7 +127,15 @@ def storage_get_object(path: str):
     return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
 # ============ Rate Limiter ============
-limiter = Limiter(key_func=get_remote_address)
+def client_ip(request: Request) -> str:
+    real_ip = request.headers.get("x-real-ip")
+    if real_ip:
+        return real_ip.strip()
+    forwarded = request.headers.get("x-forwarded-for")
+    return forwarded.split(",")[0].strip() if forwarded else get_remote_address(request)
+
+
+limiter = Limiter(key_func=client_ip)
 
 # ============ HTML Sanitizer for blog content (prevent stored XSS) ============
 ALLOWED_HTML_TAGS = [

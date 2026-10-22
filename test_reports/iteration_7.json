@@ -1,0 +1,34 @@
+{
+  "summary": "Tested the fix for the admin login perpetual lockout on the preview URL /eti-manage-x9k2m, plus reset_admin.py. All 6 requested scenarios pass. (1) attempts=5 with a lockout timestamp in the past: the form shows '5 attempts remaining', and a wrong password gives 'Invalid password. 4 attempts remaining.' with localStorage reset to attempts=1 and the lockout removed. (2) Lockout in the future: the 'Account Locked / Try again in 10 minutes' panel shows, the form is hidden and no API call is made. (3) 5 wrong passwords in a row lock the account for 15 minutes with the toast 'Too many failed attempts. Locked for 15 minutes.' (4) A 429 response shows 'Too many login requests. Please wait 1 minute and try again.' and does not count as a failed attempt. This was checked with a Playwright route mock, because real browser traffic could not trigger a 429 (see minor issue). (5) The correct password ETIadmin@2026 opens the 2FA setup screen with the QR code and secret. 2FA setup was NOT completed. (6) reset_admin.py runs, and afterwards POST /api/admin/login returns requires_setup=true.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/admin/login", "issue": "slowapi Limiter(key_func=get_remote_address) uses the proxy/ingress IP, not the real client IP. Backend logs show 10.81.4.212/10.81.4.213 for browser traffic and 127.0.0.1 for curl. As a result: (a) on production all users behind the same proxy share one 5/min bucket, so retries from one user, or a bot, can return 429 to the real admin; (b) with several ingress pods the limit is unreliable. 6 quick browser requests never hit 429, while 10 quick curl requests got 429 on requests 6-8. The limit also uses a fixed window (resets at the minute boundary), not a sliding window. Suggest a key_func that reads X-Forwarded-For / X-Real-IP (first IP)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Admin login lock panel", "issue": "The 'Account Locked' panel has no timer and does not re-render after the lockout expires. If the page stays open, the user has to reload to see the form again. The countdown minutes also stay frozen.", "selector": "text=Account Locked", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_admin_login_reset.py", "/app/test_reports/pytest/pytest_iter7.xml"],
+  "action_items": [
+    "Optional: change the slowapi key_func to use X-Forwarded-For so the admin login rate limit is per client, not per proxy",
+    "Optional: add a 1s/30s interval tick on the lock screen so the form comes back automatically when the lockout expires"
+  ],
+  "critical_code_review_comments": [
+    "The lockout logic is client-side only (localStorage), so anyone can bypass it. The real protection is the backend rate limit, which keys on the proxy IP (see backend minor issue). Consider a server-side failed-attempt counter in Mongo.",
+    "When the lockout is in the future, handlePasswordSubmit's lock branch cannot be reached from the UI because the form is hidden. This is harmless and only a defensive check.",
+    "reset_admin.py: looks correct. It uses sync pymongo, which is fine for a CLI. It runs update_many on role=admin and clears totp_secret/totp_enabled."
+  ],
+  "updated_files": ["/app/backend/tests/test_admin_login_reset.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Admin password ETIadmin@2026 (from /app/memory/test_credentials.md). 2FA left NOT set up (reset_admin.py was run, setup not completed).",
+  "seed_data_creation": "None. reset_admin.py was run on the preview DB, so the admin's 2FA is cleared and the password is ADMIN_PASSWORD.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Admin login rate limit is 5/min per proxy IP with a fixed window. Wait about 61s between batches. To test the 429 UI reliably, use page.route mocking. Admin 2FA is not set up in preview.",
+  "rca of the issue": "Original bug: after the 15-min lockout expired, admin_attempts stayed >=5, so the next failed attempt re-locked immediately. Fixed by resetting attempts to 0 when the lockout expires (on page load and on submit). Verified."
+}
