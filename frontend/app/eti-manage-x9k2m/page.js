@@ -2761,7 +2761,7 @@ export default function SecureAdminPage() {
     setLoginAttempts(attempts);
   }, []);
 
-  // Re-render the lock panel each 15s and unlock automatically when the lockout expires
+  // Re-render the lock panel each 5s and unlock automatically when the lockout expires
   const [, setLockTick] = useState(0);
   useEffect(() => {
     if (!lockoutUntil) return;
@@ -2774,7 +2774,7 @@ export default function SecureAdminPage() {
       } else {
         setLockTick((n) => n + 1);
       }
-    }, 15000);
+    }, 5000);
     return () => clearInterval(t);
   }, [lockoutUntil]);
 
@@ -3041,7 +3041,7 @@ export default function SecureAdminPage() {
               <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
                 <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
                 <p className="text-red-700 font-medium">Account Locked</p>
-                <p className="text-red-600 text-sm">Try again in {Math.ceil((lockoutUntil - Date.now()) / 60000)} minutes</p>
+                <p className="text-red-600 text-sm">Try again in {(() => { const sec = Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000)); if (sec < 60) return `${sec} seconds`; const m = Math.ceil(sec / 60); return `${m} minute${m === 1 ? '' : 's'}`; })()}</p>
               </div>
             ) : (
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -3111,7 +3111,7 @@ export default function SecureAdminPage() {
             )}
 
             <form onSubmit={handleSetup2FASubmit} className="space-y-4">
-              <input type="text" placeholder="6-digit code from app" value={otp} maxLength={6}
+              <input type="text" placeholder="000000" value={otp} maxLength={6}
                 inputMode="numeric" autoComplete="one-time-code"
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                 data-testid="admin-2fa-setup-otp-input"

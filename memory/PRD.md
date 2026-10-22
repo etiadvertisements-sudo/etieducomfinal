@@ -42,3 +42,9 @@
 - Live outage (CSS/JS returning 400 text/html): the server's cached HTML came from an old build while `.next` on disk held a newer one (rebuilt with no restart). Added `frontend/deploy.sh` (builds into `.next-new` via `NEXT_DIST_DIR`, swaps it in, then runs `pm2 restart`) and `distDir` env support in next.config.js. Tested a renamed build locally: assets return 200 with the right MIME types.
 - CSP fix (next.config.js): `connect-src` now allows googleadservices, *.doubleclick.net, google.com, google.co.in, *.google.com, pagead2, *.facebook.com and connect.facebook.net. `script-src` adds cdn.jsdelivr.net and unpkg.com (Meta CAPI param builder). `frame-src` adds td.doubleclick.net. Preview /thank-you shows 0 CSP violations, AW-18497546445 conversion hits return 200, and Meta fbevents loads.
 - Live `/api/placements` returns 404 because the live backend runs an old server.py; the backend must be redeployed.
+
+## Fix — Jun 2026: Admin login lockout on live site
+- Perpetual lockout bug: localStorage `admin_attempts` stayed at 5 after the 15-min lock expired, so the next wrong attempt re-locked instantly. Now expiry resets attempts (on load, on submit, and by a 5s timer that auto-unlocks the panel). A 429 now shows "wait 1 minute". The countdown shows seconds/minutes.
+- Rate limiter `client_ip()`: uses X-Real-IP, else the last X-Forwarded-For entry, so spoofing the header doesn't bypass it.
+- `backend/reset_admin.py`: resets the admin password to ADMIN_PASSWORD from .env and clears 2FA (for the live server).
+- Tested: iteration_7 and iteration_8 (all pass); the XFF fix was verified with curl.
